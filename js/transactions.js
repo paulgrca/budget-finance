@@ -16,7 +16,7 @@ function signedAmount(tx) {
 }
 
 // Solde actuel, séparé par devise : { EUR: 1200, MOP: -350 }.
-// (Le total converti en une seule devise arrive à l'étape 3.)
+// (La conversion en une seule devise se fait à l'affichage, voir sumIn.)
 function computeBalance() {
   const totals = { EUR: 0, MOP: 0 };
   const start = appData.startingBalance;
@@ -83,6 +83,14 @@ function updateFormForType() {
     : 'ex. Bourse, virement parents, job';
 }
 
+// Sous le champ montant : "≈ 9,09 €" pendant que tu tapes.
+function updateConvertHint() {
+  const form = document.getElementById('tx-form');
+  const amount = Number(form.elements.amount.value);
+  document.getElementById('tx-convert-hint').textContent =
+    amount > 0 ? approxInOther(amount, form.elements.currency.value) : '';
+}
+
 // Remet le formulaire à zéro (en gardant la dernière devise utilisée).
 function resetTransactionForm() {
   const form = document.getElementById('tx-form');
@@ -94,6 +102,7 @@ function resetTransactionForm() {
   document.getElementById('tx-submit').textContent = 'Ajouter';
   document.getElementById('tx-cancel').hidden = true;
   updateFormForType();
+  updateConvertHint();
 }
 
 // Remplit le formulaire avec une opération existante pour la modifier.
@@ -112,6 +121,7 @@ function startEditTransaction(id) {
   document.getElementById('tx-submit').textContent = 'Enregistrer';
   document.getElementById('tx-cancel').hidden = false;
   updateFormForType();
+  updateConvertHint();
   document.getElementById('tx-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   form.elements.amount.focus({ preventScroll: true });
 }
@@ -153,6 +163,10 @@ function initTransactionForm() {
   form.addEventListener('submit', handleTransactionSubmit);
   form.elements.type.forEach(function (radio) {
     radio.addEventListener('change', updateFormForType);
+  });
+  form.elements.amount.addEventListener('input', updateConvertHint);
+  form.elements.currency.forEach(function (radio) {
+    radio.addEventListener('change', updateConvertHint);
   });
   document.getElementById('tx-cancel').addEventListener('click', resetTransactionForm);
 
@@ -205,9 +219,12 @@ function renderTransactionList() {
         '<p class="tx-title">' + escapeHtml(title) + badge + '</p>' +
         '<p class="tx-meta">' + escapeHtml(meta.filter(Boolean).join(' · ')) + '</p>' +
       '</div>' +
-      '<p class="tx-amount ' + (isIncome ? 'is-income' : 'is-expense') + '">' +
-        (isIncome ? '+' : '−') + formatMoney(tx.amount, tx.currency) +
-      '</p>' +
+      '<div class="tx-amounts">' +
+        '<p class="tx-amount ' + (isIncome ? 'is-income' : 'is-expense') + '">' +
+          (isIncome ? '+' : '−') + formatMoney(tx.amount, tx.currency) +
+        '</p>' +
+        '<p class="approx">' + approxInOther(tx.amount, tx.currency) + '</p>' +
+      '</div>' +
       '<div class="tx-actions">' +
         '<button type="button" class="icon-btn" data-action="edit" aria-label="Modifier">✏️</button>' +
         '<button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer">🗑️</button>' +

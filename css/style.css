@@ -89,7 +89,12 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
   font-size: 0.85rem;
   font-weight: 600;
   white-space: nowrap;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
 }
+.currency-toggle span { opacity: 0.6; }
+.currency-toggle .is-current { opacity: 1; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Contenu ---------- */
 .app-main {
@@ -194,7 +199,11 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .field label, .field-label { font-size: 0.9rem; font-weight: 600; }
 .optional { font-weight: 400; color: var(--text-muted); }
 
-.field-row { display: flex; gap: 12px; align-items: end; }
+.field-row { display: flex; gap: 12px; align-items: start; }
+.field-hint { margin: 0; min-height: 1.2em; font-size: 0.8rem; }
+
+.checkbox { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; cursor: pointer; }
+.checkbox input { width: 20px; height: 20px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--primary); }
 .field-grow { flex: 1; }
 
 .field input, .field select {
@@ -267,7 +276,24 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .tx-main { flex: 1; min-width: 0; }
 .tx-title { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .tx-meta { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+.tx-amounts { text-align: right; }
 .tx-amount { margin: 0; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Montant converti dans l'autre devise, en petit */
+.approx {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Taux de change (réglages) ---------- */
+.rate-info { margin: 0 0 4px; line-height: 1.6; }
+.rate-info strong { font-size: 1.15rem; }
+.rate-status { margin: 0; }
+.rate-form { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 .tx-actions { display: flex; }
 
 .badge {

@@ -11,9 +11,9 @@
 <body>
   <header class="app-header">
     <h1 class="app-title">Budget Macao</h1>
-    <!-- Bouton pour basculer la devise principale (actif à l'étape 3) -->
+    <!-- Bouton pour basculer la devise principale (celle affichée en grand) -->
     <button type="button" class="currency-toggle" id="currency-toggle" disabled
-            title="Basculer la devise principale (bientôt)">EUR ⇄ MOP</button>
+            title="Changer la devise principale">EUR ⇄ MOP</button>
   </header>
 
   <!-- Barre d'onglets : fixée en bas sur téléphone, sous l'en-tête sur grand écran -->
@@ -44,7 +44,7 @@
         <p class="card-label">Solde actuel</p>
         <p class="balance-main" id="balance-main">0,00 €</p>
         <p class="balance-secondary" id="balance-secondary"></p>
-        <p class="hint" id="balance-hint">Le total converti EUR ⇄ MOP arrive à l'étape 3.</p>
+        <p class="hint" id="balance-hint" hidden></p>
       </div>
 
       <div class="grid">
@@ -78,6 +78,7 @@
               <label for="tx-amount">Montant</label>
               <input id="tx-amount" name="amount" type="number" inputmode="decimal"
                      step="0.01" min="0.01" required placeholder="0,00">
+              <p class="hint field-hint" id="tx-convert-hint" aria-live="polite"></p>
             </div>
             <div class="field">
               <span class="field-label" id="tx-currency-label">Devise</span>
@@ -168,7 +169,26 @@
 
       <div class="card">
         <h3 class="card-title">Taux de change</h3>
-        <p class="placeholder">Taux automatique EUR→HKD × 1,03 et saisie manuelle (étape 3).</p>
+        <p class="hint">La pataca est indexée sur le dollar de Hong Kong (1 HKD = 1,03 MOP) : le taux EUR → MOP vaut donc le taux EUR → HKD × 1,03. Il est mis à jour automatiquement une fois par jour quand tu es connecté.</p>
+        <p class="rate-info" id="rate-info"></p>
+        <p class="hint rate-status" id="rate-status" role="status" hidden></p>
+        <button type="button" class="btn btn-ghost btn-block" id="rate-refresh">Actualiser le taux</button>
+
+        <form id="rate-form" class="form rate-form">
+          <div class="field">
+            <label for="rate-manual">Taux manuel <span class="optional">(1 € = ? MOP)</span></label>
+            <input id="rate-manual" name="manualRate" type="number" inputmode="decimal"
+                   step="0.0001" min="0.0001" placeholder="ex. 9,09">
+            <p class="hint field-hint">Utilisé automatiquement si le site n'a jamais pu récupérer de taux.</p>
+          </div>
+          <label class="checkbox">
+            <input type="checkbox" name="useManualRate">
+            <span>Toujours utiliser le taux manuel (ignorer le taux automatique)</span>
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer le taux</button>
+          </div>
+        </form>
       </div>
       <div class="card">
         <h3 class="card-title">Sauvegarde</h3>

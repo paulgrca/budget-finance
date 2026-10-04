@@ -34,27 +34,56 @@ function viewFromHash() {
 
 // ---------- Accueil ----------
 
-// Une ligne "libellé ....... montant" pour chaque devise utilisée.
+// Une ligne "libellé ....... montant" : le total converti dans la devise principale
+// (+ l'autre devise en petit), ou un montant par devise s'il n'y a aucun taux.
 function moneyLines(label, totals, cssClass, sign) {
-  const lines = CURRENCIES.filter(function (cur) { return totals[cur] !== 0; })
-    .map(function (cur) {
-      return '<span class="' + cssClass + '">' + sign + formatMoney(totals[cur], cur) + '</span>';
-    });
+  const main = appData.settings.mainCurrency;
+  const other = otherCurrency(main);
+  const total = sumIn(totals, main);
+  let values;
+
+  if (total === null) {
+    values = CURRENCIES.filter(function (cur) { return totals[cur] !== 0; })
+      .map(function (cur) {
+        return '<span class="' + cssClass + '">' + sign + formatMoney(totals[cur], cur) + '</span>';
+      }).join('');
+  } else if (total === 0) {
+    values = '<span>—</span>';
+  } else {
+    const otherTotal = sumIn(totals, other);
+    values = '<span class="' + cssClass + '">' + sign + formatMoney(total, main) + '</span>' +
+      (otherTotal === null ? '' : '<span class="approx">≈ ' + formatMoney(otherTotal, other) + '</span>');
+  }
   return '<div class="summary-row"><span>' + label + '</span>' +
-    '<span class="summary-values">' + (lines.length ? lines.join('') : '<span>—</span>') + '</span></div>';
+    '<span class="summary-values">' + values + '</span></div>';
 }
 
 function renderHome() {
-  // Solde actuel : pour l'instant un montant par devise (conversion à l'étape 3).
+  // Solde actuel : total converti dans la devise principale, et l'autre devise en dessous.
   const balance = computeBalance();
   const main = appData.settings.mainCurrency;
-  const other = main === 'EUR' ? 'MOP' : 'EUR';
+  const other = otherCurrency(main);
+  const totalMain = sumIn(balance, main);
   const mainEl = document.getElementById('balance-main');
-  mainEl.textContent = formatMoney(balance[main], main);
-  mainEl.classList.toggle('is-negative', balance[main] < 0);
-  document.getElementById('balance-secondary').textContent =
-    balance[other] !== 0 ? 'et ' + formatMoney(balance[other], other) : '';
-  document.getElementById('balance-hint').hidden = balance[other] === 0;
+  const secondaryEl = document.getElementById('balance-secondary');
+  const hintEl = document.getElementById('balance-hint');
+
+  if (totalMain !== null) {
+    mainEl.textContent = formatMoney(totalMain, main);
+    mainEl.classList.toggle('is-negative', totalMain < 0);
+    const totalOther = sumIn(balance, other);
+    secondaryEl.textContent = totalOther === null ? '' : '≈ ' + formatMoney(totalOther, other);
+    const rate = getRate();
+    hintEl.textContent = rate ? 'Taux utilisé : 1 € = ' + formatRate(rate.value) + ' MOP' : '';
+    hintEl.hidden = !rate;
+  } else {
+    // Pas de taux : on ne peut pas tout additionner, on affiche chaque devise à part.
+    mainEl.textContent = formatMoney(balance[main], main);
+    mainEl.classList.toggle('is-negative', balance[main] < 0);
+    secondaryEl.textContent = balance[other] !== 0 ? 'et ' + formatMoney(balance[other], other) : '';
+    hintEl.textContent = 'Aucun taux de change : connecte-toi ou saisis un taux dans Réglages.';
+    hintEl.hidden = false;
+  }
 
   // Résumé du mois en cours.
   const month = todayISO().slice(0, 7);
@@ -99,8 +128,11 @@ function initStartForm() {
 
 // Redessine tout ce qui dépend des données. Appelée après chaque modification.
 function renderAll() {
+  renderCurrencyToggle();
   renderHome();
   renderTransactionList();
+  renderRateSettings();
+  updateConvertHint();
 }
 
 // ---------- Point d'entrée : exécuté une fois la page chargée ----------
@@ -125,6 +157,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initTransactionForm();
   initStartForm();
+  initRateSettings();
+  initCurrencyToggle();
   renderAll();
   showView(viewFromHash());
+
+  // Taux de change : on affiche d'abord le dernier connu, puis on le met à jour en arrière-plan.
+  refreshRate(false);
 });
