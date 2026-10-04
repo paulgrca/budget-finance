@@ -1,0 +1,181 @@
+/* =========================================================
+   Budget Macao — feuille de style
+   Les couleurs sont des "variables" (--nom) : on les change
+   à un seul endroit, et le mode sombre les redéfinit.
+   ========================================================= */
+
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #1f2933;
+  --text-muted: #616e7c;
+  --border: #e1e5ea;
+  --primary: #0f766e;        /* vert sarcelle */
+  --primary-contrast: #ffffff;
+  --income: #15803d;         /* vert : revenus */
+  --expense: #b91c1c;        /* rouge : dépenses */
+  --warning: #b45309;        /* orange : alerte 80 % */
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --radius: 14px;
+  --tabbar-height: 64px;
+  --header-height: 56px;
+}
+
+/* Mode sombre automatique si le téléphone/PC est réglé en sombre */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1417;
+    --surface: #1a2126;
+    --text: #e6eaee;
+    --text-muted: #9aa5b1;
+    --border: #2b343b;
+    --primary: #2dd4bf;
+    --primary-contrast: #062a26;
+    --income: #4ade80;
+    --expense: #f87171;
+    --warning: #fbbf24;
+    --shadow: none;
+  }
+}
+
+/* ---------- Bases ---------- */
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  /* Laisse la place à la barre d'onglets du bas */
+  padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.6; }
+
+/* Les chiffres gardent tous la même largeur : les montants s'alignent */
+.balance-main, .balance-secondary { font-variant-numeric: tabular-nums; }
+
+/* ---------- En-tête ---------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: var(--header-height);
+  padding: 0 16px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.app-title { margin: 0; font-size: 1.2rem; font-weight: 700; }
+
+.currency-toggle {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Contenu ---------- */
+.app-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.view-title { margin: 0 0 12px; font-size: 1.4rem; }
+
+.view[hidden] { display: none; }
+
+.grid { display: grid; gap: 12px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.grid .card { margin-bottom: 0; }
+.grid { margin-bottom: 12px; }
+
+.card-title { margin: 0 0 8px; font-size: 1.05rem; }
+.card-label { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+
+.card-balance { text-align: center; padding: 24px 16px; }
+.balance-main { margin: 4px 0 0; font-size: 2.2rem; font-weight: 700; }
+.balance-secondary { margin: 0; color: var(--text-muted); }
+
+.placeholder { margin: 0; color: var(--text-muted); font-style: italic; }
+
+/* ---------- Barre d'onglets (mobile : en bas) ---------- */
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom); /* encoche iPhone */
+}
+
+.tab {
+  flex: 1;
+  min-width: 0;
+  height: var(--tabbar-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+.tab-icon { font-size: 1.3rem; line-height: 1; }
+.tab-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.tab.is-active { color: var(--primary); font-weight: 700; }
+
+/* ---------- Grand écran : onglets sous l'en-tête, cartes sur 2 colonnes ---------- */
+@media (min-width: 768px) {
+  body { padding-bottom: 0; }
+
+  .tabbar {
+    position: sticky;
+    top: var(--header-height); /* juste sous l'en-tête */
+    bottom: auto;
+    justify-content: center;
+    border-top: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .tab {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 8px;
+    height: 48px;
+    padding: 0 16px;
+    font-size: 0.95rem;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-icon { font-size: 1.1rem; }
+  .tab.is-active { border-bottom-color: var(--primary); }
+
+  .grid { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,13 @@
+# Sauvegardes exportées depuis le site : elles contiennent tes données perso,
+# on évite de les publier par erreur sur GitHub.
+budget-macao-*.json
+
+# Fichiers système / éditeur
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Config de test de Claude (serveur local de prévisualisation)
+.claude/
