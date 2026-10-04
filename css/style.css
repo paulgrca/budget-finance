@@ -41,6 +41,9 @@
 /* ---------- Bases ---------- */
 * { box-sizing: border-box; }
 
+/* "hidden" cache toujours l'élément, même si une classe lui donne un display */
+[hidden] { display: none !important; }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -152,6 +155,156 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .tab-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .tab.is-active { color: var(--primary); font-weight: 700; }
 
+.hint { margin: 4px 0 12px; color: var(--text-muted); font-size: 0.85rem; }
+.card-balance .hint { margin: 8px 0 0; }
+.balance-main.is-negative { color: var(--expense); }
+
+.is-income { color: var(--income); }
+.is-expense { color: var(--expense); }
+
+/* ---------- Boutons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;            /* taille confortable pour le doigt */
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+.btn-primary { background: var(--primary); color: var(--primary-contrast); }
+.btn-ghost { background: transparent; border-color: var(--border); }
+.btn-block { width: 100%; margin-top: 12px; }
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 1rem;
+}
+.icon-btn:hover { background: var(--bg); }
+
+/* ---------- Formulaires ---------- */
+.form { display: grid; gap: 14px; }
+
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label, .field-label { font-size: 0.9rem; font-weight: 600; }
+.optional { font-weight: 400; color: var(--text-muted); }
+
+.field-row { display: flex; gap: 12px; align-items: end; }
+.field-grow { flex: 1; }
+
+.field input, .field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;              /* < 16px, l'iPhone zoome sur le champ */
+}
+.field input:focus, .field select:focus, .segment input:focus-visible + span {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.form-actions { display: flex; gap: 8px; }
+.form-actions .btn { flex: 1; }
+
+/* Interrupteur à deux choix (Dépense / Revenu, EUR / MOP) */
+.segmented {
+  display: flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.segment { flex: 1; position: relative; }
+.segment input { position: absolute; opacity: 0; pointer-events: none; }
+.segment span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.segment input:checked + span { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.segment-expense input:checked + span { color: var(--expense); }
+.segment-income input:checked + span { color: var(--income); }
+.segmented-small .segment span { min-height: 36px; padding: 0 10px; }
+
+/* ---------- Résumé du mois ---------- */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-values { display: grid; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- Historique ---------- */
+.tx-list { list-style: none; margin: 0; padding: 0; }
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-main { flex: 1; min-width: 0; }
+.tx-title { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.tx-meta { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+.tx-amount { margin: 0; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tx-actions { display: flex; }
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* ---------- Message temporaire ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tabbar-height) + 16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 20;
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.toast[hidden] { display: none; }
+
+/* Sur petit téléphone, montant et devise l'un sous l'autre */
+@media (max-width: 360px) {
+  .field-row { flex-direction: column; align-items: stretch; }
+}
+
 /* ---------- Grand écran : onglets sous l'en-tête, cartes sur 2 colonnes ---------- */
 @media (min-width: 768px) {
   body { padding-bottom: 0; }
@@ -178,4 +331,5 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
   .tab.is-active { border-bottom-color: var(--primary); }
 
   .grid { grid-template-columns: 1fr 1fr; }
+  .toast { bottom: 24px; }
 }

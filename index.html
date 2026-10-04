@@ -43,13 +43,15 @@
       <div class="card card-balance">
         <p class="card-label">Solde actuel</p>
         <p class="balance-main" id="balance-main">0,00 €</p>
-        <p class="balance-secondary" id="balance-secondary">≈ 0,00 MOP</p>
+        <p class="balance-secondary" id="balance-secondary"></p>
+        <p class="hint" id="balance-hint">Le total converti EUR ⇄ MOP arrive à l'étape 3.</p>
       </div>
 
       <div class="grid">
         <div class="card">
-          <h3 class="card-title">Ce mois-ci</h3>
-          <p class="placeholder">Revenus et dépenses du mois (étape 2).</p>
+          <h3 class="card-title" id="month-title">Ce mois-ci</h3>
+          <div id="month-summary"></div>
+          <button type="button" class="btn btn-primary btn-block" data-goto="transactions">+ Ajouter une opération</button>
         </div>
         <div class="card">
           <h3 class="card-title">Alertes budget</h3>
@@ -61,13 +63,57 @@
     <!-- ===== Onglet Opérations ===== -->
     <section class="view" id="view-transactions" data-view="transactions" aria-labelledby="tab-transactions" hidden>
       <h2 class="view-title">Opérations</h2>
-      <div class="card">
-        <h3 class="card-title">Ajouter une opération</h3>
-        <p class="placeholder">Formulaire revenu / dépense (étape 2).</p>
+
+      <div class="card" id="tx-form-card">
+        <h3 class="card-title" id="tx-form-title">Ajouter une opération</h3>
+        <form id="tx-form" class="form" autocomplete="off">
+          <!-- Dépense ou revenu : deux boutons radio stylés comme un interrupteur -->
+          <div class="segmented" role="radiogroup" aria-label="Type d'opération">
+            <label class="segment segment-expense"><input type="radio" name="type" value="expense" checked><span>Dépense</span></label>
+            <label class="segment segment-income"><input type="radio" name="type" value="income"><span>Revenu</span></label>
+          </div>
+
+          <div class="field-row">
+            <div class="field field-grow">
+              <label for="tx-amount">Montant</label>
+              <input id="tx-amount" name="amount" type="number" inputmode="decimal"
+                     step="0.01" min="0.01" required placeholder="0,00">
+            </div>
+            <div class="field">
+              <span class="field-label" id="tx-currency-label">Devise</span>
+              <div class="segmented segmented-small" role="radiogroup" aria-labelledby="tx-currency-label">
+                <label class="segment"><input type="radio" name="currency" value="EUR"><span>€ EUR</span></label>
+                <label class="segment"><input type="radio" name="currency" value="MOP" checked><span>MOP</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" id="tx-category-field">
+            <label for="tx-category">Catégorie</label>
+            <select id="tx-category" name="category"></select>
+          </div>
+
+          <div class="field">
+            <label for="tx-label">Libellé <span class="optional">(facultatif)</span></label>
+            <input id="tx-label" name="label" type="text" maxlength="80">
+          </div>
+
+          <div class="field">
+            <label for="tx-date">Date</label>
+            <input id="tx-date" name="date" type="date" required>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="tx-submit">Ajouter</button>
+            <button type="button" class="btn btn-ghost" id="tx-cancel" hidden>Annuler</button>
+          </div>
+        </form>
       </div>
+
       <div class="card">
         <h3 class="card-title">Historique</h3>
-        <p class="placeholder">Liste de tes revenus et dépenses (étape 2).</p>
+        <p class="placeholder" id="tx-empty">Aucune opération pour l'instant.</p>
+        <ul class="tx-list" id="tx-list"></ul>
       </div>
     </section>
 
@@ -92,6 +138,34 @@
     <!-- ===== Onglet Réglages ===== -->
     <section class="view" id="view-settings" data-view="settings" aria-labelledby="tab-settings" hidden>
       <h2 class="view-title">Réglages</h2>
+
+      <div class="card">
+        <h3 class="card-title">Solde de départ</h3>
+        <p class="hint">Combien tu avais à une date donnée. Le solde actuel part de ce montant, puis ajoute les opérations faites à partir de cette date.</p>
+        <form id="start-form" class="form">
+          <div class="field-row">
+            <div class="field field-grow">
+              <label for="start-amount">Montant</label>
+              <input id="start-amount" name="amount" type="number" inputmode="decimal" step="0.01" required>
+            </div>
+            <div class="field">
+              <span class="field-label" id="start-currency-label">Devise</span>
+              <div class="segmented segmented-small" role="radiogroup" aria-labelledby="start-currency-label">
+                <label class="segment"><input type="radio" name="currency" value="EUR"><span>€ EUR</span></label>
+                <label class="segment"><input type="radio" name="currency" value="MOP"><span>MOP</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="start-date">À la date du</label>
+            <input id="start-date" name="date" type="date" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
       <div class="card">
         <h3 class="card-title">Taux de change</h3>
         <p class="placeholder">Taux automatique EUR→HKD × 1,03 et saisie manuelle (étape 3).</p>
@@ -103,7 +177,15 @@
     </section>
   </main>
 
-  <!-- Scripts classiques (pas de "modules") pour que ça marche en ouvrant le fichier par double-clic -->
+  <!-- Message temporaire ("Dépense ajoutée"...) -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Scripts classiques (pas de "modules") pour que ça marche en ouvrant le fichier par double-clic.
+       L'ordre compte : chaque fichier peut utiliser ce que les précédents ont défini. -->
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/currency.js"></script>
+  <script src="js/transactions.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

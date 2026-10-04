@@ -17,7 +17,11 @@ Une connexion Internet n'est nécessaire que pour le taux de change automatique 
 |---|---|
 | `index.html` | Structure de la page et des onglets |
 | `css/style.css` | Design (couleurs, mobile, mode sombre) |
-| `js/app.js` | Démarrage et navigation entre onglets |
+| `js/utils.js` | Petites fonctions partagées (dates, arrondis, message temporaire) |
+| `js/storage.js` | Lecture et écriture des données dans le navigateur (localStorage) |
+| `js/currency.js` | Devises EUR / MOP (formatage des montants) |
+| `js/transactions.js` | Revenus et dépenses : calcul du solde, formulaire, historique |
+| `js/app.js` | Démarrage, navigation entre onglets, page d'accueil, solde de départ |
 
 ## Sauvegardes
 
@@ -26,7 +30,7 @@ Les données restent dans **ce navigateur, sur cet appareil**. Si tu vides les d
 ## Avancement
 
 - [x] Étape 1 : squelette et design
-- [ ] Étape 2 : stockage et opérations ponctuelles
+- [x] Étape 2 : stockage et opérations ponctuelles
 - [ ] Étape 3 : conversion EUR/MOP
 - [ ] Étape 4 : revenus et dépenses récurrents
 - [ ] Étape 5 : projection et graphique
