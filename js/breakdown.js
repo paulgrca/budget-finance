@@ -138,6 +138,9 @@ function renderBreakdown() {
     return;
   }
   wrap.hidden = false;
+  // Description lue par les lecteurs d'écran (le dessin seul ne leur dit rien)
+  document.getElementById('breakdown-chart').setAttribute('aria-label', 'Répartition des dépenses : ' +
+    data.rows.map(function (r) { return r.category + ' ' + Math.round(r.share * 100) + ' %'; }).join(', '));
   breakdownChart = new Chart(document.getElementById('breakdown-chart'), {
     type: 'doughnut',
     data: {

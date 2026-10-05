@@ -11,10 +11,10 @@
   --surface: #ffffff;        /* cartes : blanches */
   --surface-2: #f6f8fa;      /* champs, interrupteurs, barres */
   --text: #1b2430;
-  --text-muted: #6b7684;
+  --text-muted: #5d6774;     /* assez foncé pour 4,5:1 même sur les fonds gris clair */
   --border: #e3e8ed;         /* bordures fines */
   --primary: #0f766e;        /* couleur principale (vert sarcelle) */
-  --primary-2: #14a094;      /* sa version plus claire, pour les dégradés */
+  --primary-2: #0b5c55;      /* sa version plus foncée, pour les dégradés : le texte blanc reste lisible (≥ 4,5:1) */
   --primary-soft: #e7f5f3;   /* sa version très pâle, pour les fonds teintés */
   --primary-contrast: #ffffff;
   --income: #15803d;         /* vert : revenus */
@@ -53,6 +53,48 @@ body {
 button { font: inherit; color: inherit; cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 
+/* Pas de délai de 300 ms au toucher sur mobile */
+button, summary, label, a, select { touch-action: manipulation; }
+
+/* Contour visible quand on navigue au clavier (Tab), invisible au doigt ou à la souris */
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+[tabindex="-1"]:focus { outline: none; } /* titres qui reçoivent le focus au changement d'onglet */
+
+/* Retour visuel quand on appuie (sans décaler la mise en page) */
+.btn, .icon-btn, .tab, .chip span, .segment span, .currency-toggle, .sync-pill {
+  transition: transform 0.12s ease-out, background-color 0.15s ease-out;
+}
+.btn:active, .icon-btn:active, .currency-toggle:active, .sync-pill:active { transform: scale(0.96); }
+.tab:active .tab-icon, .chip:active span, .segment:active span { transform: scale(0.95); }
+
+/* Lien "Aller au contenu" : caché, il apparaît quand on arrive dessus au clavier */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 30;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+
+/* Respecte le réglage système "réduire les animations" */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Icônes au trait (voir icon() dans utils.js) */
 .icon { width: 20px; height: 20px; display: block; }
 
@@ -68,8 +110,9 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  height: var(--header-height);
-  padding: 0 16px;
+  /* Encoche / barre d'état de l'iPhone : on ajoute la marge de sécurité en haut et sur les côtés */
+  height: calc(var(--header-height) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   color: var(--text);
@@ -97,15 +140,19 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   display: inline-flex;
   gap: 6px;
   align-items: center;
+  min-height: 34px;
+  position: relative;
 }
+/* Zone tactile agrandie (invisible) autour du bouton : 46 px de haut */
+.currency-toggle::after { content: ""; position: absolute; inset: -6px -4px; }
 .currency-toggle span { opacity: 0.55; }
 .currency-toggle .is-current { opacity: 1; color: var(--text); font-weight: 700; }
 
 /* Pastille de synchronisation, entre le titre et le bouton de devise */
 .sync-pill {
   margin-left: auto;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border: none;
@@ -123,7 +170,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .app-main {
   max-width: 720px;
   margin: 0 auto;
-  padding: 8px 20px 24px;
+  padding: 8px max(20px, env(safe-area-inset-right)) 24px max(20px, env(safe-area-inset-left));
 }
 
 .view-title { margin: 8px 0 4px; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -163,8 +210,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   color: #ffffff;
   box-shadow: 0 6px 20px rgba(15, 118, 110, 0.25);
 }
-.card-balance .card-label, .card-balance .balance-secondary { color: rgba(255, 255, 255, 0.82); }
-.card-balance .hint { color: rgba(255, 255, 255, 0.7); }
+.card-balance .card-label, .card-balance .balance-secondary { color: rgba(255, 255, 255, 0.94); }
+.card-balance .hint { color: rgba(255, 255, 255, 0.9); }
 .card-balance .balance-main.is-negative { color: #fecaca; }
 .balance-main { margin: 6px 0 2px; font-size: 2.75rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
 .balance-secondary { margin: 0; color: var(--text-muted); }
@@ -182,7 +229,8 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   background: var(--surface);
   border-top: 1px solid var(--border);
   box-shadow: 0 -2px 10px rgba(16, 24, 40, 0.04);
-  padding-bottom: env(safe-area-inset-bottom); /* encoche iPhone */
+  /* Barre de geste de l'iPhone en bas, encoche sur les côtés en mode paysage */
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 .tab {
@@ -197,7 +245,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
   border: none;
   background: none;
   color: var(--text-muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;   /* 12 px minimum pour rester lisible */
   font-weight: 500;
 }
 .tab-icon { position: relative; line-height: 1; padding: 4px 14px; border-radius: 999px; }
@@ -231,8 +279,8 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 .btn-block { width: 100%; margin-top: 16px; }
 
 .icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 44px;            /* zone tactile minimum 44 x 44 px */
+  height: 44px;
   display: grid;
   place-items: center;
   border: none;
@@ -253,8 +301,9 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 .field-row { display: flex; gap: 12px; align-items: start; }
 .field-hint { margin: 0; min-height: 1.2em; font-size: 0.8rem; }
 
-.checkbox { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; cursor: pointer; }
-.checkbox input { width: 20px; height: 20px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--primary); }
+/* Toute la ligne (case + texte) est cliquable, sur 44 px de haut minimum */
+.checkbox { display: flex; gap: 12px; align-items: center; min-height: 44px; font-size: 0.95rem; cursor: pointer; }
+.checkbox input { width: 22px; height: 22px; margin: 0; flex-shrink: 0; accent-color: var(--primary); }
 .field-grow { flex: 1; }
 
 .field input, .field select {
@@ -292,7 +341,7 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 12px;
   border-radius: 9px;
   border: 1px solid transparent;
@@ -304,7 +353,7 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 .segment input:checked + span { background: var(--surface); color: var(--primary); font-weight: 600; box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1); }
 .segment-expense input:checked + span { color: var(--expense); }
 .segment-income input:checked + span { color: var(--income); }
-.segmented-small .segment span { min-height: 36px; padding: 0 10px; }
+.segmented-small .segment span { padding: 0 10px; }
 
 /* ---------- Résumé du mois ---------- */
 .summary-row {
@@ -326,6 +375,26 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 }
 .tx-item + .tx-item { border-top: 1px solid var(--border); }
 .tx-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Ligne d'opération sur deux rangées, pour laisser la place au texte sur téléphone :
+   [pastille] titre ............ montant
+              détails ........ ✏️ 🗑️       */
+.tx-op {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "dot title amounts"
+    "dot meta  actions";
+  column-gap: 10px;
+  row-gap: 0;
+  align-items: start;
+}
+.tx-op .tx-dot { grid-area: dot; margin-top: 7px; }
+.tx-op .tx-main { display: contents; }   /* titre et détails deviennent des cases de la grille */
+.tx-op .tx-title { grid-area: title; }
+.tx-op .tx-meta { grid-area: meta; }
+.tx-op .tx-amounts { grid-area: amounts; }
+.tx-op .tx-actions { grid-area: actions; justify-self: end; margin-right: -10px; }
 .tx-main { flex: 1; min-width: 0; }
 .tx-title { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
 .tx-meta { margin: 2px 0 0; color: var(--text-muted); font-size: 0.8rem; }
@@ -357,7 +426,7 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
   border-radius: 999px;
   background: var(--primary-soft);
   color: var(--primary);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   vertical-align: middle;
 }
@@ -420,7 +489,7 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 .limit-row-global { padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 .limit-row input, .limit-row select {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 10px;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -439,6 +508,7 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 44px;
   cursor: pointer;
   list-style: none;
   font-size: 0.75rem;
@@ -466,13 +536,15 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 }
 /* Cases à cocher des catégories, en forme de pastilles */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { position: relative; cursor: pointer; }
+.chip { position: relative; cursor: pointer; display: inline-flex; }
+/* Zone tactile agrandie verticalement : 36 px visibles + 4 px au-dessus et en dessous = 44 px */
+.chip::after { content: ""; position: absolute; inset: -4px 0; }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
 .chip span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -535,6 +607,9 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
 
 /* Bouton qui ressemble à un lien, dans un texte */
 .link-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;       /* zone tactile, même si le texte est petit */
   padding: 0;
   border: none;
   background: none;
@@ -544,7 +619,8 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
 }
-.alert .link-btn { display: block; margin-top: 4px; }
+.alert .link-btn { display: flex; }
+.start-steps .link-btn { min-height: 0; display: inline; } /* liens dans une phrase : la ligne entière reste facile à toucher */
 
 .inline-form { display: flex; gap: 8px; align-items: end; margin-top: 12px; grid-template-columns: none; }
 .inline-form .btn { flex-shrink: 0; }

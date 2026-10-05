@@ -29,6 +29,12 @@ function showView(name) {
   if (name === 'budget') renderBreakdown();
 }
 
+// Met le focus sur le titre de l'onglet visible (accessibilité clavier / lecteur d'écran).
+function focusViewTitle() {
+  const title = document.querySelector('.view:not([hidden]) .view-title');
+  if (title) title.focus({ preventScroll: true });
+}
+
 // Lit l'onglet dans l'adresse, ou revient à l'accueil s'il n'existe pas.
 function viewFromHash() {
   const name = location.hash.replace('#', '');
@@ -151,8 +157,19 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
       showView(tab.dataset.target);
+      focusViewTitle(); // un lecteur d'écran annonce le nouvel onglet
     });
   });
+
+  // Lien "Aller au contenu" : on place le focus sur le titre de l'onglet affiché
+  // (sans changer l'adresse, qui sert à mémoriser l'onglet).
+  document.getElementById('skip-link').addEventListener('click', function (event) {
+    event.preventDefault();
+    focusViewTitle();
+  });
+
+  // Graphiques sans animation si l'appareil demande de réduire les animations
+  if (typeof Chart !== 'undefined' && prefersReducedMotion()) Chart.defaults.animation = false;
 
   // Boutons qui mènent à un autre onglet (ex. "+ Ajouter une opération").
   // Un seul écouteur sur toute la page : il marche aussi pour les boutons créés plus tard.

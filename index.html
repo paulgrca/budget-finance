@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <!-- Indispensable pour que le site s'adapte à la largeur d'un téléphone -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- viewport-fit=cover : le site utilise tout l'écran de l'iPhone, les marges de sécurité sont gérées dans le CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <meta name="color-scheme" content="light">
   <title>Budget Macao</title>
@@ -12,6 +13,8 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Pour le clavier : saute la barre d'onglets et va directement au contenu -->
+  <a class="skip-link" href="#contenu" id="skip-link">Aller au contenu</a>
   <header class="app-header">
     <h1 class="app-title">Budget Macao</h1>
     <!-- État de la synchronisation (visible seulement quand on est connecté) -->
@@ -23,27 +26,27 @@
 
   <!-- Barre d'onglets : fixée en bas sur téléphone, sous l'en-tête sur grand écran -->
   <nav class="tabbar" role="tablist" aria-label="Navigation principale">
-    <button type="button" class="tab is-active" id="tab-home" role="tab" data-target="home" aria-selected="true">
+    <button type="button" class="tab is-active" id="tab-home" role="tab" data-target="home" aria-controls="view-home" aria-selected="true">
       <span class="tab-icon" aria-hidden="true"><span data-icon="home"></span></span><span class="tab-label">Accueil</span>
     </button>
-    <button type="button" class="tab" id="tab-transactions" role="tab" data-target="transactions" aria-selected="false">
+    <button type="button" class="tab" id="tab-transactions" role="tab" data-target="transactions" aria-controls="view-transactions" aria-selected="false">
       <span class="tab-icon" aria-hidden="true"><span data-icon="list"></span></span><span class="tab-label">Opérations</span>
     </button>
-    <button type="button" class="tab" id="tab-projection" role="tab" data-target="projection" aria-selected="false">
+    <button type="button" class="tab" id="tab-projection" role="tab" data-target="projection" aria-controls="view-projection" aria-selected="false">
       <span class="tab-icon" aria-hidden="true"><span data-icon="chart"></span></span><span class="tab-label">Projection</span>
     </button>
-    <button type="button" class="tab" id="tab-budget" role="tab" data-target="budget" aria-selected="false">
+    <button type="button" class="tab" id="tab-budget" role="tab" data-target="budget" aria-controls="view-budget" aria-selected="false">
       <span class="tab-icon" aria-hidden="true"><span data-icon="target"></span><span class="tab-dot" id="budget-dot" hidden></span></span><span class="tab-label">Budget</span>
     </button>
-    <button type="button" class="tab" id="tab-settings" role="tab" data-target="settings" aria-selected="false">
+    <button type="button" class="tab" id="tab-settings" role="tab" data-target="settings" aria-controls="view-settings" aria-selected="false">
       <span class="tab-icon" aria-hidden="true"><span data-icon="settings"></span></span><span class="tab-label">Réglages</span>
     </button>
   </nav>
 
   <main class="app-main">
     <!-- ===== Onglet Accueil ===== -->
-    <section class="view is-active" id="view-home" data-view="home" aria-labelledby="tab-home">
-      <h2 class="view-title">Accueil</h2>
+    <section class="view is-active" id="view-home" data-view="home" role="tabpanel" aria-labelledby="tab-home">
+      <h2 class="view-title" tabindex="-1">Accueil</h2>
 
       <!-- Guide de démarrage, affiché tant que l'appli est vide -->
       <div class="card card-start" id="home-start" hidden>
@@ -82,8 +85,8 @@
     </section>
 
     <!-- ===== Onglet Opérations ===== -->
-    <section class="view" id="view-transactions" data-view="transactions" aria-labelledby="tab-transactions" hidden>
-      <h2 class="view-title">Opérations</h2>
+    <section class="view" id="view-transactions" data-view="transactions" role="tabpanel" aria-labelledby="tab-transactions" hidden>
+      <h2 class="view-title" tabindex="-1">Opérations</h2>
 
       <div class="card" id="tx-form-card">
         <h3 class="card-title" id="tx-form-title">Ajouter une opération</h3>
@@ -157,8 +160,8 @@
     </section>
 
     <!-- ===== Onglet Projection ===== -->
-    <section class="view" id="view-projection" data-view="projection" aria-labelledby="tab-projection" hidden>
-      <h2 class="view-title">Projection</h2>
+    <section class="view" id="view-projection" data-view="projection" role="tabpanel" aria-labelledby="tab-projection" hidden>
+      <h2 class="view-title" tabindex="-1">Projection</h2>
 
       <div class="card">
         <div class="field">
@@ -170,7 +173,7 @@
 
       <div class="card">
         <h3 class="card-title">Évolution du solde</h3>
-        <div class="chart-wrap"><canvas id="proj-chart" aria-label="Courbe du solde réel et de la projection"></canvas></div>
+        <div class="chart-wrap"><canvas id="proj-chart" role="img" aria-label="Courbe du solde réel et de la projection"></canvas></div>
         <p class="hint" id="proj-chart-msg" hidden></p>
       </div>
 
@@ -207,8 +210,8 @@
     </section>
 
     <!-- ===== Onglet Budget ===== -->
-    <section class="view" id="view-budget" data-view="budget" aria-labelledby="tab-budget" hidden>
-      <h2 class="view-title">Budget</h2>
+    <section class="view" id="view-budget" data-view="budget" role="tabpanel" aria-labelledby="tab-budget" hidden>
+      <h2 class="view-title" tabindex="-1">Budget</h2>
 
       <div class="card">
         <h3 class="card-title" id="budget-month-title">Ce mois-ci</h3>
@@ -237,7 +240,7 @@
           </div>
           <p class="breakdown-summary" id="breakdown-summary"></p>
           <div class="breakdown-chart-wrap" id="breakdown-chart-wrap">
-            <canvas id="breakdown-chart" aria-label="Répartition des dépenses par catégorie"></canvas>
+            <canvas id="breakdown-chart" role="img" aria-label="Répartition des dépenses par catégorie"></canvas>
           </div>
           <ul class="breakdown-list" id="breakdown-list"></ul>
         </details>
@@ -298,8 +301,8 @@
     </section>
 
     <!-- ===== Onglet Réglages ===== -->
-    <section class="view" id="view-settings" data-view="settings" aria-labelledby="tab-settings" hidden>
-      <h2 class="view-title">Réglages</h2>
+    <section class="view" id="view-settings" data-view="settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <h2 class="view-title" tabindex="-1">Réglages</h2>
 
       <div class="card">
         <h3 class="card-title">Synchronisation entre appareils</h3>

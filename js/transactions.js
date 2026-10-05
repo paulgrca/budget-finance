@@ -181,7 +181,7 @@ function startEditTransaction(id) {
   updateFormForType();
   updateFormForRecurring();
   updateConvertHint();
-  document.getElementById('tx-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('tx-form-card').scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
   form.elements.amount.focus({ preventScroll: true });
 }
 
@@ -322,7 +322,7 @@ function txItemHtml(tx, meta, badge) {
   meta = meta.filter(function (text) { return text && text !== title; });
   // Pastille de couleur : vert pour un revenu, couleur de la catégorie (comme le camembert) pour une dépense.
   const dotColor = isIncome ? 'var(--income)' : categoryColor(tx.category || 'Autre');
-  return '<li class="tx-item" data-id="' + tx.id + '">' +
+  return '<li class="tx-item tx-op" data-id="' + tx.id + '">' +
       '<span class="tx-dot" style="background:' + dotColor + '"></span>' +
       '<div class="tx-main">' +
         '<p class="tx-title">' + escapeHtml(title) + badge + '</p>' +

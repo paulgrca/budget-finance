@@ -68,11 +68,17 @@ function renderStaticIcons() {
   });
 }
 
+// L'utilisateur a-t-il demandé à son appareil de réduire les animations ?
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 // Petit message temporaire en bas de l'écran ("Enregistré", etc.).
 function showToast(message) {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.hidden = false;
   clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(function () { toast.hidden = true; }, 2200);
+  // 3,5 secondes : assez pour lire, puis le message disparaît tout seul
+  showToast.timer = setTimeout(function () { toast.hidden = true; }, 3500);
 }
