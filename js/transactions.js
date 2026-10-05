@@ -320,7 +320,10 @@ function txItemHtml(tx, meta, badge) {
   const title = tx.label || tx.category || (isIncome ? 'Revenu' : 'Dépense');
   // Inutile de répéter la catégorie si c'est déjà le titre ("Loyer · Loyer").
   meta = meta.filter(function (text) { return text && text !== title; });
+  // Pastille de couleur : vert pour un revenu, couleur de la catégorie (comme le camembert) pour une dépense.
+  const dotColor = isIncome ? 'var(--income)' : categoryColor(tx.category || 'Autre');
   return '<li class="tx-item" data-id="' + tx.id + '">' +
+      '<span class="tx-dot" style="background:' + dotColor + '"></span>' +
       '<div class="tx-main">' +
         '<p class="tx-title">' + escapeHtml(title) + badge + '</p>' +
         '<p class="tx-meta">' + escapeHtml(meta.filter(Boolean).join(' · ')) + '</p>' +
