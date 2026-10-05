@@ -23,6 +23,15 @@ Une connexion Internet n'est nécessaire que pour le taux de change automatique 
 
 Le taux EUR → MOP vaut le taux EUR → HKD × 1,03, car la pataca est indexée sur le dollar de Hong Kong. Le site le récupère une fois par jour. Un taux manuel sert de secours.
 
+## Synchronisation entre appareils
+
+Réglages → « Se connecter avec Google » : les données sont copiées dans Firebase (Firestore) et synchronisées en direct sur tous les appareils connectés au même compte.
+
+- Chaque appareil garde une copie locale : l'appli marche hors ligne et renvoie les modifications au retour de la connexion.
+- Si un appareil a été modifié hors ligne pendant qu'un autre changeait aussi les données, le site demande quelle version garder. L'autre est conservée en copie de secours (`budgetMacao.avant-synchro` dans le navigateur).
+- Configuration : `js/firebase-config.js`. Règles de sécurité : `firestore.rules` (chacun n'accède qu'à ses propres données).
+- Google étant bloqué en Chine continentale, la synchro n'y fonctionne pas. L'appli reste utilisable et se resynchronise de retour à Macao.
+
 ## Sauvegardes
 
 Les données restent dans **ce navigateur, sur cet appareil**. Si tu vides les données du navigateur, elles disparaissent.
@@ -46,6 +55,9 @@ Les fichiers `budget-macao-*.json` sont exclus de Git (`.gitignore`), pour ne pa
 | `js/projection.js` | Projection sur X mois, dépenses courantes estimées, graphique (Chart.js) |
 | `js/budget.js` | Limites mensuelles, alertes 80 % / 100 %, réel vs prévu |
 | `js/settings.js` | Catégories, export / import JSON, remise à zéro |
+| `js/firebase-config.js` | Configuration publique du projet Firebase |
+| `js/sync.js` | Connexion Google et synchronisation avec Firestore |
+| `firestore.rules` | Règles de sécurité de la base (à coller dans la console Firebase) |
 | `js/app.js` | Démarrage, navigation entre onglets, page d'accueil, solde de départ |
 
 ## Avancement

@@ -140,7 +140,8 @@ function importFile(file) {
     const when = data.exportedAt ? ' (sauvegarde du ' + formatDate(data.exportedAt.slice(0, 10)) + ')' : '';
     const ok = confirm('Remplacer tes données actuelles (' + appData.transactions.length + ' opérations) ' +
       'par celles du fichier' + when + ' : ' + data.transactions.length + ' opérations ?\n\n' +
-      'Tes données actuelles seront perdues si tu ne les as pas exportées.');
+      'Tes données actuelles seront perdues si tu ne les as pas exportées.' +
+      (syncUser ? '\nTu es connecté : tous tes appareils recevront ces données.' : ''));
     if (!ok) return;
 
     appData = withDefaults(data);
@@ -162,6 +163,7 @@ function importFile(file) {
 
 function resetAllData() {
   const answer = prompt('Tout effacer : opérations, budgets et réglages. Impossible à annuler !\n' +
+    (syncUser ? 'Tu es connecté : les données seront aussi effacées dans le cloud et sur TOUS tes appareils.\n' : '') +
     'Pense à exporter une sauvegarde avant.\n\nTape EFFACER pour confirmer :');
   if (answer === null) return;
   if (answer.trim().toUpperCase() !== 'EFFACER') {

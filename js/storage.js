@@ -70,6 +70,8 @@ function loadData() {
 function saveData() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    // Synchronisation : prévient sync.js qu'il y a du nouveau à envoyer dans le cloud.
+    if (typeof onLocalDataSaved === 'function') onLocalDataSaved();
     return true;
   } catch (e) {
     console.error('Échec de la sauvegarde :', e);
