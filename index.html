@@ -99,9 +99,20 @@
             <input id="tx-label" name="label" type="text" maxlength="80">
           </div>
 
-          <div class="field">
-            <label for="tx-date">Date</label>
-            <input id="tx-date" name="date" type="date" required>
+          <label class="checkbox">
+            <input type="checkbox" name="recurring" id="tx-recurring">
+            <span>Tous les mois (loyer, bourse, abonnement…)</span>
+          </label>
+
+          <div class="field-row">
+            <div class="field field-grow">
+              <label for="tx-date" id="tx-date-label">Date</label>
+              <input id="tx-date" name="date" type="date" required>
+            </div>
+            <div class="field field-grow" id="tx-end-field" hidden>
+              <label for="tx-end">Jusqu'au <span class="optional">(facultatif)</span></label>
+              <input id="tx-end" name="endDate" type="date">
+            </div>
           </div>
 
           <div class="form-actions">
@@ -109,6 +120,12 @@
             <button type="button" class="btn btn-ghost" id="tx-cancel" hidden>Annuler</button>
           </div>
         </form>
+      </div>
+
+      <div class="card" id="tx-recurring-card" hidden>
+        <h3 class="card-title">Chaque mois</h3>
+        <ul class="tx-list" id="tx-recurring-list"></ul>
+        <div class="recurring-summary" id="tx-recurring-summary"></div>
       </div>
 
       <div class="card">

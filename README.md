@@ -32,7 +32,7 @@ Les données restent dans **ce navigateur, sur cet appareil**. Si tu vides les d
 - [x] Étape 1 : squelette et design
 - [x] Étape 2 : stockage et opérations ponctuelles
 - [x] Étape 3 : conversion EUR/MOP
-- [ ] Étape 4 : revenus et dépenses récurrents
+- [x] Étape 4 : revenus et dépenses récurrents
 - [ ] Étape 5 : projection et graphique
 - [ ] Étape 6 : limites de budget et alertes
 - [ ] Étape 7 : export/import, catégories, finitions

@@ -277,6 +277,8 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .tx-title { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .tx-meta { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
 .tx-amounts { text-align: right; }
+.recurring-summary { margin-top: 8px; padding-top: 4px; border-top: 2px solid var(--border); }
+.recurring-summary .summary-row:last-child { border-bottom: none; }
 .tx-amount { margin: 0; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* Montant converti dans l'autre devise, en petit */
