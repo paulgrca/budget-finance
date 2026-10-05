@@ -234,7 +234,7 @@ function initTransactionForm() {
   });
   document.getElementById('tx-cancel').addEventListener('click', resetTransactionForm);
 
-  // Boutons ✏️ et 🗑️ : un seul écouteur par liste (récurrents et historique).
+  // Boutons modifier / supprimer : un seul écouteur par liste (récurrents et historique).
   ['tx-recurring-list', 'tx-list'].forEach(function (listId) {
     document.getElementById(listId).addEventListener('click', handleListClick);
   });
@@ -332,8 +332,8 @@ function txItemHtml(tx, meta, badge) {
         '<p class="approx">' + approxInOther(tx.amount, tx.currency) + '</p>' +
       '</div>' +
       '<div class="tx-actions">' +
-        '<button type="button" class="icon-btn" data-action="edit" aria-label="Modifier">✏️</button>' +
-        '<button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer">🗑️</button>' +
+        '<button type="button" class="icon-btn" data-action="edit" aria-label="Modifier">' + icon('pencil') + '</button>' +
+        '<button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer">' + icon('trash') + '</button>' +
       '</div>' +
     '</li>';
 }

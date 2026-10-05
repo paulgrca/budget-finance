@@ -190,7 +190,7 @@ function renderProjection() {
     '<p class="balance-main' + (last.balance < 0 ? ' is-negative' : '') + '">' + formatMoney(last.balance, cur) + '</p>' +
     '<p class="balance-secondary">≈ ' + formatMoney(otherAmount, other) + '</p>';
   if (firstNegative) {
-    html += '<p class="alert alert-danger">⚠️ À ce rythme, ton solde passe sous zéro en ' +
+    html += '<p class="alert alert-danger">À ce rythme, ton solde passe sous zéro en ' +
       escapeHtml(monthLabel(firstNegative.month, true)) + '.</p>';
   } else {
     const diff = last.balance - data.today;
@@ -257,7 +257,7 @@ function renderProjectionChart(data) {
     projected.push(row.balance);
   });
 
-  // Couleurs lues dans le CSS : elles suivent le mode clair / sombre.
+  // Couleurs lues dans le CSS : un seul endroit à modifier pour changer le thème.
   const css = getComputedStyle(document.documentElement);
   const color = function (name) { return css.getPropertyValue(name).trim(); };
   const cur = data.currency;
@@ -305,7 +305,15 @@ function renderProjectionChart(data) {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: color('--text'), filter: function (item) { return item.text !== 'Zéro'; } } },
+        legend: {
+          labels: {
+            color: color('--text-muted'),
+            usePointStyle: true,
+            pointStyle: 'line',   // un simple trait dans la légende, plus discret qu'un carré plein
+            boxWidth: 24,
+            filter: function (item) { return item.text !== 'Zéro'; }
+          }
+        },
         tooltip: {
           filter: function (item) { return item.raw !== null && item.dataset.label !== 'Zéro'; },
           callbacks: {
@@ -364,7 +372,4 @@ function initProjection() {
     showToast('Estimation automatique');
     renderAll();
   });
-
-  // Le graphique suit le mode clair / sombre s'il change pendant que la page est ouverte.
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderProjection);
 }

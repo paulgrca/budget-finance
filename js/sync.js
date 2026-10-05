@@ -301,10 +301,10 @@ function renderSync() {
   if (!pill || !card) return;
 
   const labels = {
-    syncing: ['⏳', 'Synchronisation…'],
-    synced: ['☁️', 'Synchronisé'],
-    offline: ['📴', 'Hors ligne : tes modifications seront envoyées au retour de la connexion'],
-    error: ['⚠️', 'Erreur de synchronisation']
+    syncing: [icon('refresh'), 'Synchronisation…'],
+    synced: [icon('cloud'), 'Synchronisé'],
+    offline: [icon('cloudOff'), 'Hors ligne : tes modifications seront envoyées au retour de la connexion'],
+    error: [icon('alert'), 'Erreur de synchronisation']
   };
 
   const label = labels[syncState] || labels.syncing;
@@ -312,7 +312,7 @@ function renderSync() {
   // Petite pastille dans l'en-tête, seulement quand on est connecté
   pill.hidden = !syncUser;
   if (syncUser) {
-    pill.textContent = label[0];
+    pill.innerHTML = label[0];
     pill.title = label[1];
     pill.setAttribute('aria-label', label[1]);
   }

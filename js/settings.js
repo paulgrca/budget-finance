@@ -30,7 +30,7 @@ function renderCategories() {
       '<div class="tx-main"><p class="tx-title">' + escapeHtml(cat) + '</p>' +
       '<p class="tx-meta">' + (used ? used + ' opération' + (used > 1 ? 's' : '') : 'pas encore utilisée') + '</p></div>' +
       (removable
-        ? '<div class="tx-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer ' + escapeHtml(cat) + '">🗑️</button></div>'
+        ? '<div class="tx-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer ' + escapeHtml(cat) + '">' + icon('trash') + '</button></div>'
         : '<span class="badge" title="Reçoit les dépenses des catégories supprimées">par défaut</span>') +
     '</li>';
   }).join('');

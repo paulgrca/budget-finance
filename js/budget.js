@@ -135,7 +135,7 @@ function renderBudget() {
       if (pace !== null && todayISO().slice(8, 10) !== lastDayOfMonth(month).slice(8, 10)) {
         const over = pace > global.limit.amount;
         html += '<p class="' + (over ? 'alert alert-warning' : 'hint') + '">' +
-          (over ? '⚠️ ' : '') + 'À ce rythme, tu auras dépensé environ ' + formatMoney(pace, global.limit.currency) +
+          'À ce rythme, tu auras dépensé environ ' + formatMoney(pace, global.limit.currency) +
           ' à la fin du mois' + (over ? ', soit plus que ton budget.' : '.') + '</p>';
       }
     }
@@ -184,7 +184,7 @@ function renderMonthOverrides() {
     return '<li class="tx-item" data-month="' + m + '">' +
       '<div class="tx-main"><p class="tx-title">' + escapeHtml(monthLabel(m, true)) + '</p></div>' +
       '<p class="tx-amount">' + formatMoney(limit.amount, limit.currency) + '</p>' +
-      '<div class="tx-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer">🗑️</button></div>' +
+      '<div class="tx-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Supprimer">' + icon('trash') + '</button></div>' +
     '</li>';
   }).join('');
 
@@ -254,7 +254,7 @@ function renderBudgetAlerts() {
 
   if (alerts.length === 0) {
     const global = status.find(function (s) { return s.key === 'global'; });
-    container.innerHTML = '<p class="alert alert-ok">✅ Tout va bien' +
+    container.innerHTML = '<p class="alert alert-ok">Tout va bien' +
       (global && global.ratio !== null ? ' : ' + Math.round(global.ratio * 100) + ' % du budget global utilisé.' : '.') + '</p>';
     return;
   }
@@ -262,9 +262,9 @@ function renderBudgetAlerts() {
   container.innerHTML = alerts.map(function (a) {
     const percent = Math.round(a.ratio * 100);
     const text = a.level === 'danger'
-      ? '🚨 <strong>' + escapeHtml(a.label) + '</strong> : budget dépassé (' + percent + ' %, ' +
+      ? '<strong>' + escapeHtml(a.label) + '</strong> : budget dépassé (' + percent + ' %, ' +
         formatMoney(a.spent, a.limit.currency) + ' / ' + formatMoney(a.limit.amount, a.limit.currency) + ')'
-      : '⚠️ <strong>' + escapeHtml(a.label) + '</strong> : ' + percent + ' % du budget utilisé (reste ' +
+      : '<strong>' + escapeHtml(a.label) + '</strong> : ' + percent + ' % du budget utilisé (reste ' +
         formatMoney(a.limit.amount - a.spent, a.limit.currency) + ')';
     return '<p class="alert alert-' + a.level + '">' + text + '</p>';
   }).join('');
