@@ -20,6 +20,8 @@ function createDefaultData() {
       manualRate: null,         // taux saisi à la main (étape 3)
       useManualRate: false,
       lastRate: null,           // dernier taux automatique obtenu (étape 3)
+      projectionMonths: 6,      // horizon de la projection (étape 5)
+      spendingEstimate: null,   // dépenses courantes / mois saisies à la main, sinon calcul auto
       categories: DEFAULT_CATEGORIES.slice()
     },
     // "J'avais tant d'argent à telle date" : point de départ du solde.

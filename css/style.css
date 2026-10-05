@@ -311,6 +311,39 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
   vertical-align: middle;
 }
 
+/* ---------- Projection ---------- */
+.field input[type="range"] {
+  min-height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  accent-color: var(--primary);
+}
+.proj-headline { text-align: center; margin-top: 8px; }
+.proj-headline .hint { margin: 8px 0 0; }
+
+.chart-wrap { position: relative; height: 260px; }
+
+.alert {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-align: left;
+}
+.alert-danger { background: color-mix(in srgb, var(--expense) 14%, transparent); color: var(--expense); }
+.alert-warning { background: color-mix(in srgb, var(--warning) 16%, transparent); color: var(--warning); }
+
+/* Tableau : défile horizontalement dans sa carte si l'écran est trop étroit */
+.table-wrap { overflow-x: auto; margin: 0 -4px; }
+.proj-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+.proj-table th, .proj-table td { padding: 8px 4px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.proj-table thead th { color: var(--text-muted); font-weight: 600; font-size: 0.78rem; text-align: right; }
+.proj-table thead th:first-child, .proj-table tbody th { text-align: left; }
+.proj-table tbody th { font-weight: 600; }
+.proj-table td { text-align: right; }
+.proj-table tr.is-current { background: var(--bg); }
+
 /* ---------- Message temporaire ---------- */
 .toast {
   position: fixed;

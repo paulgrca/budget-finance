@@ -24,6 +24,8 @@ function showView(name) {
     history.replaceState(null, '', '#' + name);
   }
   window.scrollTo(0, 0);
+
+  if (name === 'projection') renderProjection();
 }
 
 // Lit l'onglet dans l'adresse, ou revient à l'accueil s'il n'existe pas.
@@ -133,6 +135,8 @@ function renderAll() {
   renderTransactionList();
   renderRateSettings();
   updateConvertHint();
+  // Le graphique ne se dessine bien que s'il est visible : on ne le calcule que sur l'onglet Projection.
+  if (!document.getElementById('view-projection').hidden) renderProjection();
 }
 
 // ---------- Point d'entrée : exécuté une fois la page chargée ----------
@@ -159,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initStartForm();
   initRateSettings();
   initCurrencyToggle();
+  initProjection();
   renderAll();
   showView(viewFromHash());
 

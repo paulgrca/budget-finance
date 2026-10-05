@@ -138,9 +138,50 @@
     <!-- ===== Onglet Projection ===== -->
     <section class="view" id="view-projection" data-view="projection" aria-labelledby="tab-projection" hidden>
       <h2 class="view-title">Projection</h2>
+
       <div class="card">
-        <h3 class="card-title">Dans combien de mois ?</h3>
-        <p class="placeholder">Graphique et tableau mois par mois (étape 5).</p>
+        <div class="field">
+          <label for="proj-months">Dans combien de mois ? <strong id="proj-months-value">6 mois</strong></label>
+          <input id="proj-months" type="range" min="1" max="24" step="1" value="6">
+        </div>
+        <div class="proj-headline" id="proj-headline"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Évolution du solde</h3>
+        <div class="chart-wrap"><canvas id="proj-chart" aria-label="Courbe du solde réel et de la projection"></canvas></div>
+        <p class="hint" id="proj-chart-msg" hidden></p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Dépenses courantes estimées</h3>
+        <p class="hint">Courses, sorties, transport… : tout ce qui n'est pas récurrent. Sans cette estimation, la projection ne compterait que le loyer et la bourse et serait trop optimiste.</p>
+        <p id="proj-est-info"></p>
+        <form id="proj-est-form" class="form">
+          <div class="field-row">
+            <div class="field field-grow">
+              <label for="proj-est">Mon estimation <span class="optional">(<span id="proj-est-currency">EUR</span> par mois)</span></label>
+              <input id="proj-est" name="estimate" type="number" inputmode="decimal" step="0.01" min="0" placeholder="laisser vide = automatique">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Utiliser cette estimation</button>
+            <button type="button" class="btn btn-ghost" id="proj-est-reset" hidden>Revenir à l'automatique</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Mois par mois</h3>
+        <div class="table-wrap">
+          <table class="proj-table" id="proj-table">
+            <thead>
+              <tr><th scope="col">Mois</th><th scope="col">Revenus</th><th scope="col">Dépenses</th><th scope="col">Solde fin de mois</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="hint">Les dépenses incluent les dépenses courantes estimées. Converti au taux actuel.</p>
       </div>
     </section>
 
@@ -219,10 +260,13 @@
 
   <!-- Scripts classiques (pas de "modules") pour que ça marche en ouvrant le fichier par double-clic.
        L'ordre compte : chaque fichier peut utiliser ce que les précédents ont défini. -->
+  <!-- Chart.js : bibliothèque de graphiques (nécessite Internet ; sans elle, seul le graphique manque) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/currency.js"></script>
   <script src="js/transactions.js"></script>
+  <script src="js/projection.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

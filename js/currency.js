@@ -31,6 +31,11 @@ function formatMoney(amount, currency) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency }).format(amount);
 }
 
+// Version arrondie à l'unité, pour les tableaux serrés : "1 235 €"
+function formatMoneyRounded(amount, currency) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency, maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(amount);
+}
+
 function otherCurrency(currency) {
   return currency === 'EUR' ? 'MOP' : 'EUR';
 }
