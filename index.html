@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f766e">
   <title>Budget Macao</title>
+  <!-- Petite icône d'onglet (un emoji dessiné en SVG, sans fichier image) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -39,6 +41,22 @@
     <!-- ===== Onglet Accueil ===== -->
     <section class="view is-active" id="view-home" data-view="home" aria-labelledby="tab-home">
       <h2 class="view-title">Accueil</h2>
+
+      <!-- Guide de démarrage, affiché tant que l'appli est vide -->
+      <div class="card card-start" id="home-start" hidden>
+        <h3 class="card-title">👋 Pour bien démarrer</h3>
+        <ol class="start-steps">
+          <li><button type="button" class="link-btn" data-goto="settings">Indique ton solde de départ</button> (combien tu as aujourd'hui).</li>
+          <li><button type="button" class="link-btn" data-goto="transactions">Ajoute tes récurrents</button> : loyer, bourse… avec « Tous les mois ».</li>
+          <li><button type="button" class="link-btn" data-goto="budget">Fixe tes limites</button> pour recevoir des alertes.</li>
+        </ol>
+      </div>
+
+      <!-- Rappel de sauvegarde -->
+      <p class="alert alert-warning home-backup" id="home-backup" hidden>
+        💾 Pense à sauvegarder tes données (elles ne sont que dans ce navigateur).
+        <button type="button" class="link-btn" data-goto="settings">Exporter une sauvegarde</button>
+      </p>
 
       <div class="card card-balance">
         <p class="card-label">Solde actuel</p>
@@ -303,8 +321,32 @@
         </form>
       </div>
       <div class="card">
+        <h3 class="card-title">Catégories de dépenses</h3>
+        <ul class="tx-list" id="category-list"></ul>
+        <form id="category-form" class="form inline-form">
+          <div class="field field-grow">
+            <label for="category-name" class="visually-hidden">Nouvelle catégorie</label>
+            <input id="category-name" name="name" type="text" maxlength="30" placeholder="Nouvelle catégorie (ex. Santé)" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+      </div>
+
+      <div class="card">
         <h3 class="card-title">Sauvegarde</h3>
-        <p class="placeholder">Export / import JSON (étape 7).</p>
+        <p class="hint">Tes données ne sont enregistrées que dans ce navigateur. Exporte régulièrement un fichier de sauvegarde (à garder sur ton Drive, par mail…) : il permet de tout récupérer, ou de passer sur un autre appareil.</p>
+        <p id="backup-info"></p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="export-btn">⬇️ Exporter</button>
+          <button type="button" class="btn btn-ghost" id="import-btn">⬆️ Importer</button>
+        </div>
+        <input type="file" id="import-file" accept=".json,application/json" hidden>
+      </div>
+
+      <div class="card card-danger">
+        <h3 class="card-title">Zone dangereuse</h3>
+        <p class="hint">Efface toutes les opérations, budgets et réglages de ce navigateur.</p>
+        <button type="button" class="btn btn-danger btn-block" id="reset-btn">Tout effacer</button>
       </div>
     </section>
   </main>
@@ -322,6 +364,7 @@
   <script src="js/transactions.js"></script>
   <script src="js/projection.js"></script>
   <script src="js/budget.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

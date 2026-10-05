@@ -136,6 +136,7 @@ function renderAll() {
   renderRateSettings();
   renderBudgetAlerts();
   renderBudget();
+  renderSettings();
   updateConvertHint();
   // Le graphique ne se dessine bien que s'il est visible : on ne le calcule que sur l'onglet Projection.
   if (!document.getElementById('view-projection').hidden) renderProjection();
@@ -167,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initCurrencyToggle();
   initProjection();
   initBudget();
+  initSettings();
   renderAll();
   showView(viewFromHash());
 

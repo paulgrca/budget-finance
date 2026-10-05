@@ -387,6 +387,39 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 }
 .tab-dot.is-danger { background: var(--expense); }
 
+/* ---------- Réglages et accueil (étape 7) ---------- */
+.btn-danger { background: transparent; color: var(--expense); border-color: var(--expense); }
+.card-danger { border-color: color-mix(in srgb, var(--expense) 40%, var(--border)); }
+
+/* Bouton qui ressemble à un lien, dans un texte */
+.link-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.alert .link-btn { color: inherit; display: block; margin-top: 4px; }
+
+.inline-form { display: flex; gap: 8px; align-items: end; margin-top: 12px; grid-template-columns: none; }
+.inline-form .btn { flex-shrink: 0; }
+
+.card-start { border-color: var(--primary); }
+.start-steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.home-backup { margin: 0 0 12px; }
+
+/* Caché à l'écran mais lu par les lecteurs d'écran */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* Tableau : défile horizontalement dans sa carte si l'écran est trop étroit */
 .table-wrap { overflow-x: auto; margin: 0 -4px; }
 .proj-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; font-variant-numeric: tabular-nums; }

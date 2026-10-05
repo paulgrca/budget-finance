@@ -22,6 +22,7 @@ function createDefaultData() {
       lastRate: null,           // dernier taux automatique obtenu (étape 3)
       projectionMonths: 6,      // horizon de la projection (étape 5)
       spendingEstimate: null,   // dépenses courantes / mois saisies à la main, sinon calcul auto
+      lastExport: null,         // date de la dernière sauvegarde exportée (rappel au bout de 14 jours)
       categories: DEFAULT_CATEGORIES.slice()
     },
     // "J'avais tant d'argent à telle date" : point de départ du solde.

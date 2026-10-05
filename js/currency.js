@@ -155,10 +155,16 @@ function formatRate(value) {
   return value.toLocaleString('fr-FR', { maximumFractionDigits: 4 });
 }
 
-function initRateSettings() {
+// Remplit le formulaire du taux manuel avec les valeurs enregistrées.
+function fillRateForm() {
   const form = document.getElementById('rate-form');
   form.elements.manualRate.value = appData.settings.manualRate || '';
   form.elements.useManualRate.checked = appData.settings.useManualRate;
+}
+
+function initRateSettings() {
+  const form = document.getElementById('rate-form');
+  fillRateForm();
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
