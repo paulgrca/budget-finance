@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initProjection();
   initBudget();
   initSettings();
+  initSync();
   renderAll();
   showView(viewFromHash());
 

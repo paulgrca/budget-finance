@@ -93,6 +93,21 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
   gap: 6px;
   align-items: center;
 }
+/* Pastille de synchronisation, entre le titre et le bouton de devise */
+.sync-pill {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary-contrast) 18%, transparent);
+  font-size: 1rem;
+  line-height: 1;
+}
+.sync-status { margin: 4px 0 12px; }
+.sync-status small { color: var(--text-muted); }
+.sync-error, .sync-offline { color: var(--warning); }
+
 .currency-toggle span { opacity: 0.6; }
 .currency-toggle .is-current { opacity: 1; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 
