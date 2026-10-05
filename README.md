@@ -47,7 +47,7 @@ Les fichiers `budget-macao-*.json` sont exclus de Git (`.gitignore`), pour ne pa
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Structure de la page et des onglets |
-| `css/style.css` | Design (couleurs, mobile, mode sombre) |
+| `css/style.css` | Design épuré sur fond blanc (couleurs, mobile) |
 | `js/utils.js` | Petites fonctions partagées (dates, arrondis, message temporaire) |
 | `js/storage.js` | Lecture et écriture des données dans le navigateur (localStorage) |
 | `js/currency.js` | Devises EUR / MOP : taux de change (auto + manuel), conversion, bouton de devise |

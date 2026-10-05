@@ -257,7 +257,7 @@ function renderProjectionChart(data) {
     projected.push(row.balance);
   });
 
-  // Couleurs lues dans le CSS : elles suivent le mode clair / sombre.
+  // Couleurs lues dans le CSS : un seul endroit à modifier pour changer le thème.
   const css = getComputedStyle(document.documentElement);
   const color = function (name) { return css.getPropertyValue(name).trim(); };
   const cur = data.currency;
@@ -372,7 +372,4 @@ function initProjection() {
     showToast('Estimation automatique');
     renderAll();
   });
-
-  // Le graphique suit le mode clair / sombre s'il change pendant que la page est ouverte.
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderProjection);
 }

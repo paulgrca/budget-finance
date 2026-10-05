@@ -1,7 +1,7 @@
 /* =========================================================
    Budget Macao — feuille de style (design épuré)
    Les couleurs sont des "variables" (--nom) : on les change
-   à un seul endroit, et le mode sombre les redéfinit.
+   à un seul endroit.
    Principe : fond uni, pas de cadres ni d'ombres, une seule
    couleur d'accent ; rouge et orange réservés aux alertes.
    ========================================================= */
@@ -23,21 +23,9 @@
   --header-height: 56px;
 }
 
-/* Mode sombre automatique si le téléphone/PC est réglé en sombre */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f0f10;
-    --surface: #0f0f10;
-    --surface-2: #1c1c1f;
-    --text: #ededed;
-    --text-muted: #9a9aa2;
-    --border: #232326;
-    --primary: #5eead4;
-    --primary-contrast: #062a26;
-    --expense: #f87171;
-    --warning: #fbbf24;
-  }
-}
+/* Toujours sur fond blanc, même si le téléphone/PC est réglé en mode sombre.
+   "color-scheme: light" garde aussi les champs, menus et calendriers en clair. */
+:root { color-scheme: light; }
 
 /* ---------- Bases ---------- */
 * { box-sizing: border-box; }
