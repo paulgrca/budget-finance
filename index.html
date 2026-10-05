@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <!-- Indispensable pour que le site s'adapte à la largeur d'un téléphone -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0f766e">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f0f10" media="(prefers-color-scheme: dark)">
   <title>Budget Macao</title>
   <!-- Petite icône d'onglet (un emoji dessiné en SVG, sans fichier image) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
@@ -14,7 +15,7 @@
   <header class="app-header">
     <h1 class="app-title">Budget Macao</h1>
     <!-- État de la synchronisation (visible seulement quand on est connecté) -->
-    <button type="button" class="sync-pill" id="sync-pill" hidden>☁️</button>
+    <button type="button" class="sync-pill" id="sync-pill" hidden></button>
     <!-- Bouton pour basculer la devise principale (celle affichée en grand) -->
     <button type="button" class="currency-toggle" id="currency-toggle" disabled
             title="Changer la devise principale">EUR ⇄ MOP</button>
@@ -23,19 +24,19 @@
   <!-- Barre d'onglets : fixée en bas sur téléphone, sous l'en-tête sur grand écran -->
   <nav class="tabbar" role="tablist" aria-label="Navigation principale">
     <button type="button" class="tab is-active" id="tab-home" role="tab" data-target="home" aria-selected="true">
-      <span class="tab-icon" aria-hidden="true">🏠</span><span class="tab-label">Accueil</span>
+      <span class="tab-icon" aria-hidden="true"><span data-icon="home"></span></span><span class="tab-label">Accueil</span>
     </button>
     <button type="button" class="tab" id="tab-transactions" role="tab" data-target="transactions" aria-selected="false">
-      <span class="tab-icon" aria-hidden="true">💸</span><span class="tab-label">Opérations</span>
+      <span class="tab-icon" aria-hidden="true"><span data-icon="list"></span></span><span class="tab-label">Opérations</span>
     </button>
     <button type="button" class="tab" id="tab-projection" role="tab" data-target="projection" aria-selected="false">
-      <span class="tab-icon" aria-hidden="true">📈</span><span class="tab-label">Projection</span>
+      <span class="tab-icon" aria-hidden="true"><span data-icon="chart"></span></span><span class="tab-label">Projection</span>
     </button>
     <button type="button" class="tab" id="tab-budget" role="tab" data-target="budget" aria-selected="false">
-      <span class="tab-icon" aria-hidden="true">🎯<span class="tab-dot" id="budget-dot" hidden></span></span><span class="tab-label">Budget</span>
+      <span class="tab-icon" aria-hidden="true"><span data-icon="target"></span><span class="tab-dot" id="budget-dot" hidden></span></span><span class="tab-label">Budget</span>
     </button>
     <button type="button" class="tab" id="tab-settings" role="tab" data-target="settings" aria-selected="false">
-      <span class="tab-icon" aria-hidden="true">⚙️</span><span class="tab-label">Réglages</span>
+      <span class="tab-icon" aria-hidden="true"><span data-icon="settings"></span></span><span class="tab-label">Réglages</span>
     </button>
   </nav>
 
@@ -46,7 +47,7 @@
 
       <!-- Guide de démarrage, affiché tant que l'appli est vide -->
       <div class="card card-start" id="home-start" hidden>
-        <h3 class="card-title">👋 Pour bien démarrer</h3>
+        <h3 class="card-title">Pour bien démarrer</h3>
         <ol class="start-steps">
           <li><button type="button" class="link-btn" data-goto="settings">Indique ton solde de départ</button> (combien tu as aujourd'hui).</li>
           <li><button type="button" class="link-btn" data-goto="transactions">Ajoute tes récurrents</button> : loyer, bourse… avec « Tous les mois ».</li>
@@ -56,7 +57,7 @@
 
       <!-- Rappel de sauvegarde -->
       <p class="alert alert-warning home-backup" id="home-backup" hidden>
-        💾 Pense à sauvegarder tes données (elles ne sont que dans ce navigateur).
+        Pense à sauvegarder tes données (elles ne sont que dans ce navigateur).
         <button type="button" class="link-btn" data-goto="settings">Exporter une sauvegarde</button>
       </p>
 
@@ -344,8 +345,8 @@
         <p class="hint">Tes données ne sont enregistrées que dans ce navigateur. Exporte régulièrement un fichier de sauvegarde (à garder sur ton Drive, par mail…) : il permet de tout récupérer, ou de passer sur un autre appareil.</p>
         <p id="backup-info"></p>
         <div class="form-actions">
-          <button type="button" class="btn btn-primary" id="export-btn">⬇️ Exporter</button>
-          <button type="button" class="btn btn-ghost" id="import-btn">⬆️ Importer</button>
+          <button type="button" class="btn btn-primary" id="export-btn">Exporter</button>
+          <button type="button" class="btn btn-ghost" id="import-btn">Importer</button>
         </div>
         <input type="file" id="import-file" accept=".json,application/json" hidden>
       </div>

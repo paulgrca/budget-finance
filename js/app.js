@@ -145,6 +145,7 @@ function renderAll() {
 // ---------- Point d'entrée : exécuté une fois la page chargée ----------
 
 document.addEventListener('DOMContentLoaded', function () {
+  renderStaticIcons();
   document.querySelectorAll('.tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
       showView(tab.dataset.target);
