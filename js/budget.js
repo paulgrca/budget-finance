@@ -67,30 +67,84 @@ function computeBudgetStatus(month) {
   return status;
 }
 
-// Estimation des dépenses du mois en cours à la fin du mois, au rythme actuel :
-// récurrentes du mois + ponctuelles déjà prévues + ponctuelles passées extrapolées.
-function paceEstimate(currency) {
+// Rythme de dépense du mois en cours pour une limite (category = null pour le budget global).
+//
+// On sépare deux sortes de dépenses :
+//  - les "fixes" : récurrentes du mois (loyer...) + ponctuelles déjà prévues plus tard ce mois-ci.
+//    Elles sont réservées d'office dans le budget, même si elles ne sont pas encore passées ;
+//  - les "courantes" : dépenses ponctuelles déjà faites (courses, sorties...). C'est sur elles
+//    qu'on calcule le rythme par jour (sinon le loyer, payé en un jour, fausserait la moyenne).
+//
+// Renvoie tout dans la devise de la limite (null s'il manque un taux de change) :
+//  dailyAverage    : dépensé en moyenne par jour (dépenses courantes)
+//  dailyAllowance  : ce que le budget permet par jour pour les dépenses courantes
+//  overPerDay      : dailyAverage - dailyAllowance (positif = tu dépasses chaque jour)
+//  remaining       : ce que tu peux encore dépenser ce mois-ci
+//  perDayToStay    : à ne pas dépasser par jour d'ici la fin du mois pour tenir le budget
+//  exceedInDays    : dans combien de jours le budget sera dépassé à ce rythme
+//                    (0 = déjà dépassé, null = tu tiens jusqu'à la fin du mois)
+//  projectedTotal  : dépenses prévues à la fin du mois à ce rythme
+function computePace(limit, category) {
   const today = todayISO();
   const month = today.slice(0, 7);
   const day = Number(today.slice(8, 10));
   const daysInMonth = Number(lastDayOfMonth(month).slice(8, 10));
+  // Premier jour compté : le 1er du mois, ou la date du solde de départ si elle est plus récente.
+  const start = appData.startingBalance.date;
+  const firstDay = start.slice(0, 7) === month ? Number(start.slice(8, 10)) : 1;
+  const daysElapsed = Math.max(1, day - firstDay + 1);      // aujourd'hui inclus
+  const daysInPeriod = Math.max(1, daysInMonth - firstDay + 1);
+  const daysLeft = daysInMonth - day;                        // jours restants après aujourd'hui
+
   const fixed = { EUR: 0, MOP: 0 };
   const soFar = { EUR: 0, MOP: 0 };
-
   appData.transactions.forEach(function (tx) {
     if (tx.type !== 'expense') return;
+    if (category && (tx.category || 'Autre') !== category) return;
     if (tx.recurring) {
       fixed[tx.currency] += tx.amount * occurrenceDates(tx, month + '-01', month + '-31').length;
     } else if (tx.date.slice(0, 7) === month) {
-      if (tx.date > today) fixed[tx.currency] += tx.amount;  // déjà prévue : comptée telle quelle
-      else soFar[tx.currency] += tx.amount;                  // passée : on extrapole le rythme
+      if (tx.date > today) fixed[tx.currency] += tx.amount;  // déjà prévue : réservée telle quelle
+      else soFar[tx.currency] += tx.amount;                  // déjà faite : sert à calculer le rythme
     }
   });
 
-  const fixedSum = sumIn(fixed, currency);
-  const soFarSum = sumIn(soFar, currency);
+  const fixedSum = sumIn(fixed, limit.currency);
+  const soFarSum = sumIn(soFar, limit.currency);
   if (fixedSum === null || soFarSum === null) return null;
-  return roundCents(fixedSum + soFarSum / day * daysInMonth);
+
+  const dailyAverage = soFarSum / daysElapsed;
+  const dailyAllowance = (limit.amount - fixedSum) / daysInPeriod;
+  const remaining = limit.amount - fixedSum - soFarSum;
+
+  // Dans combien de jours on dépasse : on "dépense" dailyAverage chaque jour sur ce qui reste.
+  // Ex. : reste 100 €, 30 €/jour -> 90 € en 3 jours, dépassement le 4e jour.
+  let exceedInDays = null;
+  if (remaining < 0) exceedInDays = 0;
+  else if (dailyAverage > 0) {
+    const days = Math.floor(remaining / dailyAverage) + 1;
+    if (days <= daysLeft) exceedInDays = days;
+  }
+
+  return {
+    dailyAverage: roundCents(dailyAverage),
+    dailyAllowance: roundCents(dailyAllowance),
+    overPerDay: roundCents(dailyAverage - dailyAllowance),
+    remaining: roundCents(remaining),
+    perDayToStay: daysLeft > 0 ? roundCents(remaining / daysLeft) : null,
+    exceedInDays: exceedInDays,
+    projectedTotal: roundCents(fixedSum + soFarSum + dailyAverage * daysLeft),
+    fixed: roundCents(fixedSum),
+    daysLeft: daysLeft
+  };
+}
+
+// "dans 4 jours (vers le 9 oct.)"
+function exceedText(days) {
+  const parts = todayISO().split('-').map(Number);
+  const date = new Date(parts[0], parts[1] - 1, parts[2] + days);
+  return 'dans ' + days + ' jour' + (days > 1 ? 's' : '') +
+    ' (vers le ' + date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ')';
 }
 
 // ---------- Affichage : onglet Budget ----------
@@ -103,6 +157,14 @@ function progressHtml(item) {
   }
   const percent = Math.round(item.ratio * 100);
   const remaining = item.limit.amount - item.spent;
+
+  // Pour une catégorie : "dépassée dans 4 jours" si le rythme actuel mène au dépassement.
+  let paceNote = '';
+  if (item.key !== 'global' && remaining >= 0) {
+    const pace = computePace(item.limit, item.key);
+    if (pace && pace.exceedInDays) paceNote = ' · dépassée ' + exceedText(pace.exceedInDays) + ' à ce rythme';
+  }
+
   return '<div class="progress-item level-' + item.level + '">' +
     '<div class="progress-head">' +
       '<span class="progress-label">' + escapeHtml(item.label) + '</span>' +
@@ -114,6 +176,7 @@ function progressHtml(item) {
     '</div>' +
     '<p class="progress-foot">' + percent + ' % · ' +
       (remaining >= 0 ? 'reste ' + formatMoney(remaining, cur) : 'dépassé de ' + formatMoney(-remaining, cur)) +
+      paceNote +
     '</p>' +
   '</div>';
 }
@@ -127,24 +190,67 @@ function renderBudget() {
   if (status.length === 0) {
     container.innerHTML = '<p class="placeholder">Aucune limite pour l\'instant : fixe-les ci-dessous.</p>';
   } else {
-    let html = status.map(progressHtml).join('');
-    // "À ce rythme..." pour le budget global
-    const global = status.find(function (s) { return s.key === 'global'; });
-    if (global && global.spent !== null) {
-      const pace = paceEstimate(global.limit.currency);
-      if (pace !== null && todayISO().slice(8, 10) !== lastDayOfMonth(month).slice(8, 10)) {
-        const over = pace > global.limit.amount;
-        html += '<p class="' + (over ? 'alert alert-warning' : 'hint') + '">' +
-          'À ce rythme, tu auras dépensé environ ' + formatMoney(pace, global.limit.currency) +
-          ' à la fin du mois' + (over ? ', soit plus que ton budget.' : '.') + '</p>';
-      }
-    }
-    container.innerHTML = html;
+    container.innerHTML = status.map(progressHtml).join('');
   }
 
+  renderPace();
   renderBudgetForm();
   renderMonthOverrides();
   renderBudgetHistory();
+}
+
+// Bloc "Rythme du mois" (budget global) : par jour, dépassement, jours restants.
+function renderPace() {
+  const card = document.getElementById('budget-pace-card');
+  const limit = globalLimitFor(todayISO().slice(0, 7));
+  const pace = limit ? computePace(limit, null) : null;
+  card.hidden = !pace;
+  if (!pace) return;
+
+  const cur = limit.currency;
+  const row = function (label, value, cssClass) {
+    return '<div class="summary-row"><span>' + label + '</span>' +
+      '<span class="summary-values"><span class="' + (cssClass || '') + '">' + value + '</span></span></div>';
+  };
+
+  let html =
+    row('Tu dépenses en moyenne', formatMoney(pace.dailyAverage, cur) + ' / jour') +
+    row('Ton budget permet', formatMoney(Math.max(pace.dailyAllowance, 0), cur) + ' / jour');
+
+  // Dépassement (ou marge) par jour
+  if (pace.overPerDay > 0) {
+    html += '<p class="alert alert-warning">Tu dépasses ton budget de <strong>' +
+      formatMoney(pace.overPerDay, cur) + ' par jour</strong>.</p>';
+  } else {
+    html += '<p class="alert alert-ok">Tu es sous ton budget de <strong>' +
+      formatMoney(-pace.overPerDay, cur) + ' par jour</strong>.</p>';
+  }
+
+  // Combien de temps avant de dépasser
+  if (pace.exceedInDays === 0) {
+    html += '<p class="alert alert-danger"><strong>Budget déjà dépassé</strong> de ' +
+      formatMoney(-pace.remaining, cur) + ' ce mois-ci.</p>';
+  } else if (pace.exceedInDays) {
+    html += '<p class="alert alert-danger">À ce rythme, ton budget sera <strong>dépassé ' +
+      exceedText(pace.exceedInDays) + '</strong>.</p>';
+  } else if (pace.daysLeft > 0) {
+    html += '<p class="alert alert-ok">À ce rythme, tu <strong>tiens jusqu\'à la fin du mois</strong>, ' +
+      'avec environ ' + formatMoney(limit.amount - pace.projectedTotal, cur) + ' de marge.</p>';
+  }
+
+  // Conseil pour tenir
+  if (pace.perDayToStay !== null && pace.remaining > 0) {
+    html += '<p class="hint pace-tip">Pour rester dans ton budget : au maximum <strong>' +
+      formatMoney(pace.perDayToStay, cur) + ' par jour</strong> pendant les ' + pace.daysLeft +
+      ' jours restants. Fin de mois prévue à ce rythme : ' + formatMoney(pace.projectedTotal, cur) +
+      ' sur ' + formatMoney(limit.amount, cur) + '.</p>';
+  }
+  if (pace.fixed > 0) {
+    html += '<p class="hint">Les dépenses fixes du mois (' + formatMoney(pace.fixed, cur) +
+      ', loyer compris) sont déjà réservées : la moyenne par jour ne compte que tes dépenses courantes.</p>';
+  }
+
+  document.getElementById('budget-pace').innerHTML = html;
 }
 
 let budgetFormDirty = false; // true pendant que tu modifies les limites (sans avoir enregistré)
@@ -252,14 +358,22 @@ function renderBudgetAlerts() {
     return;
   }
 
+  // Avertissement de rythme : le budget global sera dépassé avant la fin du mois.
+  const global = status.find(function (s) { return s.key === 'global'; });
+  const pace = global ? computePace(global.limit, null) : null;
+  const paceAlert = pace && pace.exceedInDays
+    ? '<p class="alert alert-warning">À ce rythme, <strong>budget global dépassé ' + exceedText(pace.exceedInDays) +
+      '</strong> : tu dépenses ' + formatMoney(pace.overPerDay, global.limit.currency) + ' de trop par jour.' +
+      '<button type="button" class="link-btn" data-goto="budget">Voir le détail</button></p>'
+    : '';
+
   if (alerts.length === 0) {
-    const global = status.find(function (s) { return s.key === 'global'; });
-    container.innerHTML = '<p class="alert alert-ok">Tout va bien' +
-      (global && global.ratio !== null ? ' : ' + Math.round(global.ratio * 100) + ' % du budget global utilisé.' : '.') + '</p>';
+    container.innerHTML = paceAlert || ('<p class="alert alert-ok">Tout va bien' +
+      (global && global.ratio !== null ? ' : ' + Math.round(global.ratio * 100) + ' % du budget global utilisé.' : '.') + '</p>');
     return;
   }
 
-  container.innerHTML = alerts.map(function (a) {
+  container.innerHTML = paceAlert + alerts.map(function (a) {
     const percent = Math.round(a.ratio * 100);
     const text = a.level === 'danger'
       ? '<strong>' + escapeHtml(a.label) + '</strong> : budget dépassé (' + percent + ' %, ' +
