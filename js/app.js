@@ -26,6 +26,7 @@ function showView(name) {
   window.scrollTo(0, 0);
 
   if (name === 'projection') renderProjection();
+  if (name === 'budget') renderBreakdown();
 }
 
 // Lit l'onglet dans l'adresse, ou revient à l'accueil s'il n'existe pas.
@@ -140,6 +141,7 @@ function renderAll() {
   updateConvertHint();
   // Le graphique ne se dessine bien que s'il est visible : on ne le calcule que sur l'onglet Projection.
   if (!document.getElementById('view-projection').hidden) renderProjection();
+  if (!document.getElementById('view-budget').hidden) renderBreakdown();
 }
 
 // ---------- Point d'entrée : exécuté une fois la page chargée ----------
@@ -169,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initCurrencyToggle();
   initProjection();
   initBudget();
+  initBreakdown();
   initSettings();
   initSync();
   renderAll();

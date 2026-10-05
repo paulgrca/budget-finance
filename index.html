@@ -215,6 +215,36 @@
         <div id="budget-progress"></div>
       </div>
 
+      <!-- Rythme du mois : visible quand un budget global est fixé -->
+      <div class="card" id="budget-pace-card" hidden>
+        <h3 class="card-title">Rythme du mois</h3>
+        <div id="budget-pace"></div>
+      </div>
+
+      <!-- Répartition par catégorie : section repliable -->
+      <div class="card">
+        <details class="reveal" id="breakdown">
+          <summary>Où je dépense le plus</summary>
+          <div class="breakdown-controls">
+            <select id="breakdown-period" aria-label="Période">
+              <option value="month">Ce mois-ci</option>
+              <option value="lastMonth">Le mois dernier</option>
+              <option value="3months">Les 3 derniers mois</option>
+              <option value="all">Depuis le début</option>
+            </select>
+            <label class="checkbox">
+              <input type="checkbox" id="breakdown-recurring">
+              <span>Inclure le loyer et les dépenses récurrentes</span>
+            </label>
+          </div>
+          <p class="breakdown-summary" id="breakdown-summary"></p>
+          <div class="breakdown-chart-wrap" id="breakdown-chart-wrap">
+            <canvas id="breakdown-chart" aria-label="Répartition des dépenses par catégorie"></canvas>
+          </div>
+          <ul class="breakdown-list" id="breakdown-list"></ul>
+        </details>
+      </div>
+
       <div class="card">
         <h3 class="card-title">Réel vs prévu</h3>
         <p class="hint">Ce que tu as vraiment dépensé chaque mois, comparé à ton budget global. En vert, ce que tu as économisé ; en rouge, le dépassement.</p>
@@ -376,6 +406,7 @@
   <script src="js/transactions.js"></script>
   <script src="js/projection.js"></script>
   <script src="js/budget.js"></script>
+  <script src="js/breakdown.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/sync.js"></script>

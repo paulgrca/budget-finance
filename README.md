@@ -18,7 +18,7 @@ Une connexion Internet n'est nécessaire que pour le taux de change automatique 
 | **Accueil** | Solde actuel (EUR et MOP), résumé du mois, alertes de budget, rappel de sauvegarde |
 | **Opérations** | Ajouter un revenu ou une dépense (EUR ou MOP), ponctuel ou tous les mois ; historique |
 | **Projection** | Solde prévu dans 1 à 24 mois, courbe réel + projection, tableau mois par mois |
-| **Budget** | Limites mensuelles (globale, par catégorie, mois précis), alertes 80 % / 100 %, réel vs prévu |
+| **Budget** | Limites mensuelles (globale, par catégorie, mois précis), alertes 80 % / 100 %, rythme par jour et jours avant dépassement, camembert des dépenses, réel vs prévu |
 | **Réglages** | Solde de départ, taux de change, catégories, sauvegarde (export/import), tout effacer |
 
 Le taux EUR → MOP vaut le taux EUR → HKD × 1,03, car la pataca est indexée sur le dollar de Hong Kong. Le site le récupère une fois par jour. Un taux manuel sert de secours.
@@ -53,7 +53,8 @@ Les fichiers `budget-macao-*.json` sont exclus de Git (`.gitignore`), pour ne pa
 | `js/currency.js` | Devises EUR / MOP : taux de change (auto + manuel), conversion, bouton de devise |
 | `js/transactions.js` | Revenus et dépenses : calcul du solde, récurrents, formulaire, historique |
 | `js/projection.js` | Projection sur X mois, dépenses courantes estimées, graphique (Chart.js) |
-| `js/budget.js` | Limites mensuelles, alertes 80 % / 100 %, réel vs prévu |
+| `js/budget.js` | Limites mensuelles, alertes 80 % / 100 %, rythme du mois (par jour, jours avant dépassement), réel vs prévu |
+| `js/breakdown.js` | Camembert de la répartition des dépenses par catégorie |
 | `js/settings.js` | Catégories, export / import JSON, remise à zéro |
 | `js/firebase-config.js` | Configuration publique du projet Firebase |
 | `js/sync.js` | Connexion Google et synchronisation avec Firestore |
