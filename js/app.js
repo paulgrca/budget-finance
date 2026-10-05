@@ -134,6 +134,8 @@ function renderAll() {
   renderHome();
   renderTransactionList();
   renderRateSettings();
+  renderBudgetAlerts();
+  renderBudget();
   updateConvertHint();
   // Le graphique ne se dessine bien que s'il est visible : on ne le calcule que sur l'onglet Projection.
   if (!document.getElementById('view-projection').hidden) renderProjection();
@@ -149,10 +151,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Boutons qui mènent à un autre onglet (ex. "+ Ajouter une opération").
-  document.querySelectorAll('[data-goto]').forEach(function (button) {
-    button.addEventListener('click', function () {
-      showView(button.dataset.goto);
-    });
+  // Un seul écouteur sur toute la page : il marche aussi pour les boutons créés plus tard.
+  document.addEventListener('click', function (event) {
+    const button = event.target.closest('[data-goto]');
+    if (button) showView(button.dataset.goto);
   });
 
   window.addEventListener('hashchange', function () {
@@ -164,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initRateSettings();
   initCurrencyToggle();
   initProjection();
+  initBudget();
   renderAll();
   showView(viewFromHash());
 

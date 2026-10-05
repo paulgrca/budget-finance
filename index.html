@@ -28,7 +28,7 @@
       <span class="tab-icon" aria-hidden="true">📈</span><span class="tab-label">Projection</span>
     </button>
     <button type="button" class="tab" id="tab-budget" role="tab" data-target="budget" aria-selected="false">
-      <span class="tab-icon" aria-hidden="true">🎯</span><span class="tab-label">Budget</span>
+      <span class="tab-icon" aria-hidden="true">🎯<span class="tab-dot" id="budget-dot" hidden></span></span><span class="tab-label">Budget</span>
     </button>
     <button type="button" class="tab" id="tab-settings" role="tab" data-target="settings" aria-selected="false">
       <span class="tab-icon" aria-hidden="true">⚙️</span><span class="tab-label">Réglages</span>
@@ -55,7 +55,7 @@
         </div>
         <div class="card">
           <h3 class="card-title">Alertes budget</h3>
-          <p class="placeholder">Les alertes à 80 % et 100 % s'afficheront ici (étape 6).</p>
+          <div id="home-alerts"></div>
         </div>
       </div>
     </section>
@@ -188,9 +188,63 @@
     <!-- ===== Onglet Budget ===== -->
     <section class="view" id="view-budget" data-view="budget" aria-labelledby="tab-budget" hidden>
       <h2 class="view-title">Budget</h2>
+
       <div class="card">
-        <h3 class="card-title">Limites mensuelles</h3>
-        <p class="placeholder">Limite globale et par catégorie (étape 6).</p>
+        <h3 class="card-title" id="budget-month-title">Ce mois-ci</h3>
+        <div id="budget-progress"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Réel vs prévu</h3>
+        <p class="hint">Ce que tu as vraiment dépensé chaque mois, comparé à ton budget global. En vert, ce que tu as économisé ; en rouge, le dépassement.</p>
+        <div class="table-wrap">
+          <table class="proj-table" id="budget-history">
+            <thead>
+              <tr><th scope="col">Mois</th><th scope="col">Budget</th><th scope="col">Dépensé</th><th scope="col">Écart</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Mes limites mensuelles</h3>
+        <p class="hint">Valables tous les mois. Laisse vide pour ne pas fixer de limite. Toutes les dépenses comptent, récurrentes comprises (loyer…).</p>
+        <form id="budget-form" class="form">
+          <div id="budget-limits" class="limit-list"></div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer les limites</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Budget d'un mois précis</h3>
+        <p class="hint">Pour un mois différent des autres (voyage, rentrée…) : ce budget global remplace la limite globale habituelle pour ce mois-là.</p>
+        <form id="override-form" class="form">
+          <div class="field">
+            <label for="override-month">Mois</label>
+            <select id="override-month" name="month"></select>
+          </div>
+          <div class="field-row">
+            <div class="field field-grow">
+              <label for="override-amount">Budget global</label>
+              <input id="override-amount" name="amount" type="number" inputmode="decimal" step="0.01" min="0.01" required>
+            </div>
+            <div class="field">
+              <label for="override-currency">Devise</label>
+              <select id="override-currency" name="currency">
+                <option value="EUR">EUR</option>
+                <option value="MOP">MOP</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+          </div>
+        </form>
+        <p class="placeholder" id="override-empty">Aucun mois particulier.</p>
+        <ul class="tx-list" id="override-list"></ul>
       </div>
     </section>
 
@@ -267,6 +321,7 @@
   <script src="js/currency.js"></script>
   <script src="js/transactions.js"></script>
   <script src="js/projection.js"></script>
+  <script src="js/budget.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

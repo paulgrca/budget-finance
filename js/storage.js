@@ -27,7 +27,8 @@ function createDefaultData() {
     // "J'avais tant d'argent à telle date" : point de départ du solde.
     startingBalance: { amount: 0, currency: 'EUR', date: todayISO() },
     transactions: [],
-    budgets: { global: null, byCategory: {} } // étape 6
+    // Limites mensuelles : globale, par catégorie, et globale pour un mois précis (voir budget.js)
+    budgets: { global: null, byCategory: {}, months: {} }
   };
 }
 

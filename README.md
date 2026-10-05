@@ -22,6 +22,7 @@ Une connexion Internet n'est nécessaire que pour le taux de change automatique 
 | `js/currency.js` | Devises EUR / MOP : taux de change (auto + manuel), conversion, bouton de devise |
 | `js/transactions.js` | Revenus et dépenses : calcul du solde, formulaire, historique |
 | `js/projection.js` | Projection sur X mois, dépenses courantes estimées, graphique (Chart.js) |
+| `js/budget.js` | Limites mensuelles, alertes 80 % / 100 %, réel vs prévu |
 | `js/app.js` | Démarrage, navigation entre onglets, page d'accueil, solde de départ |
 
 ## Sauvegardes
@@ -35,5 +36,5 @@ Les données restent dans **ce navigateur, sur cet appareil**. Si tu vides les d
 - [x] Étape 3 : conversion EUR/MOP
 - [x] Étape 4 : revenus et dépenses récurrents
 - [x] Étape 5 : projection et graphique
-- [ ] Étape 6 : limites de budget et alertes
+- [x] Étape 6 : limites de budget et alertes
 - [ ] Étape 7 : export/import, catégories, finitions

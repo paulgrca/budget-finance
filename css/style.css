@@ -334,6 +334,59 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .alert-danger { background: color-mix(in srgb, var(--expense) 14%, transparent); color: var(--expense); }
 .alert-warning { background: color-mix(in srgb, var(--warning) 16%, transparent); color: var(--warning); }
 
+.alert-ok { background: color-mix(in srgb, var(--income) 14%, transparent); color: var(--income); margin-top: 0; }
+#home-alerts .alert:first-child { margin-top: 0; }
+
+/* ---------- Budget ---------- */
+.progress-item { padding: 8px 0; }
+.progress-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.progress-label { font-weight: 600; }
+.progress-values { font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: right; }
+.progress-bar {
+  height: 10px;
+  margin: 6px 0 4px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.progress-bar span { display: block; height: 100%; border-radius: 999px; background: var(--income); }
+.level-warning .progress-bar span { background: var(--warning); }
+.level-danger .progress-bar span { background: var(--expense); }
+.progress-foot { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+.level-warning .progress-foot { color: var(--warning); font-weight: 600; }
+.level-danger .progress-foot { color: var(--expense); font-weight: 600; }
+
+.limit-list { display: grid; gap: 8px; }
+.limit-row { display: grid; grid-template-columns: 1fr 110px 76px; gap: 8px; align-items: center; }
+.limit-row label { font-weight: 600; font-size: 0.92rem; overflow-wrap: anywhere; }
+.limit-row-global { padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.limit-row input, .limit-row select {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+/* Pastille d'alerte sur l'onglet Budget */
+.tab-icon { position: relative; }
+.tab-dot {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--warning);
+  border: 2px solid var(--surface);
+}
+.tab-dot.is-danger { background: var(--expense); }
+
 /* Tableau : défile horizontalement dans sa carte si l'écran est trop étroit */
 .table-wrap { overflow-x: auto; margin: 0 -4px; }
 .proj-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
