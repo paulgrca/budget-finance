@@ -82,19 +82,30 @@ function renderBreakdown() {
   document.getElementById('breakdown-period').value = ui.period;
   document.getElementById('breakdown-recurring').checked = ui.includeRecurring;
 
-  const data = computeBreakdown(ui.period, ui.includeRecurring);
+  let data = computeBreakdown(ui.period, ui.includeRecurring);
   const list = document.getElementById('breakdown-list');
   const summary = document.getElementById('breakdown-summary');
+  const note = document.getElementById('breakdown-note');
   if (breakdownChart) { breakdownChart.destroy(); breakdownChart = null; }
+  note.hidden = true;
+  summary.classList.remove('empty-state');
 
-  if (!data) {
-    summary.textContent = 'Il faut un taux de change pour additionner euros et patacas.';
-    list.innerHTML = '';
-    document.getElementById('breakdown-chart-wrap').hidden = true;
-    return;
+  // Aucune dépense courante sur la période, mais des récurrentes (loyer...) ?
+  // Plutôt qu'un camembert vide, on les inclut automatiquement et on le signale.
+  if (data && data.rows.length === 0 && !ui.includeRecurring) {
+    const withRecurring = computeBreakdown(ui.period, true);
+    if (withRecurring && withRecurring.rows.length > 0) {
+      data = withRecurring;
+      note.textContent = 'Aucune dépense courante sur cette période : le loyer et les dépenses récurrentes sont affichés.';
+      note.hidden = false;
+    }
   }
-  if (data.rows.length === 0) {
-    summary.textContent = 'Aucune dépense sur cette période.';
+
+  if (!data || data.rows.length === 0) {
+    summary.classList.add('empty-state');
+    summary.innerHTML = !data
+      ? 'Il faut un taux de change pour additionner euros et patacas (voir Réglages).'
+      : '<strong>Aucune dépense sur cette période.</strong><br>Choisis une autre période ci-dessus, ou ajoute tes dépenses dans l\'onglet Opérations.';
     list.innerHTML = '';
     document.getElementById('breakdown-chart-wrap').hidden = true;
     return;
