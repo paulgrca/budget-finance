@@ -6,7 +6,14 @@
 // règles de sécurité Firestore (seul ton compte Google peut lire
 // et écrire tes données).
 //
-// null = synchronisation désactivée (le site marche en local seulement).
+// Mettre null pour désactiver la synchronisation (le site marche alors en local seulement).
 // =========================================================
 
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyDu5YXCddtsfGVpYGDUsBPGepmdhMuHleA',
+  authDomain: 'budget-macao.firebaseapp.com',
+  projectId: 'budget-macao',
+  storageBucket: 'budget-macao.firebasestorage.app',
+  messagingSenderId: '360982311668',
+  appId: '1:360982311668:web:edf198405771c724d224a1'
+};
