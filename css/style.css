@@ -464,7 +464,44 @@ td.is-expense, .proj-headline .is-negative { color: var(--expense); }
   font: inherit;
   font-size: 16px;
 }
+/* Cases à cocher des catégories, en forme de pastilles */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; pointer-events: none; }
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: line-through;   /* décochée : barrée */
+}
+.chip input:checked + span {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--text);
+  text-decoration: none;
+}
+.chip input:focus-visible + span { box-shadow: 0 0 0 3px var(--primary-soft); }
+.chip-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.chip input:not(:checked) + span .chip-dot { opacity: 0.35; }
+
 .breakdown-summary { margin: 16px 0 8px; }
+/* Message bien visible quand il n'y a rien à afficher */
+.breakdown-summary.empty-state {
+  padding: 18px 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  text-align: center;
+}
+.breakdown-summary.empty-state strong { color: var(--text); }
 .breakdown-chart-wrap { position: relative; height: 220px; margin: 8px 0 12px; }
 .breakdown-list { list-style: none; margin: 0; padding: 0; }
 .breakdown-row {

@@ -1,7 +1,9 @@
 // =========================================================
 // Répartition des dépenses par catégorie (camembert)
 // Section repliable de l'onglet Budget : on choisit la période
-// et si on compte le loyer et les autres dépenses récurrentes.
+// et on coche les catégories à afficher (Bouffe, Voyages, Sorties...).
+// Toutes les dépenses comptent, ponctuelles comme récurrentes :
+// seule la catégorie choisie à la saisie décide de la part du camembert.
 // =========================================================
 
 let breakdownChart = null;
@@ -18,13 +20,17 @@ function categoryColor(cat) {
   return CATEGORY_COLORS[(index === -1 ? 0 : index) % CATEGORY_COLORS.length];
 }
 
-// Préférences (période, loyer inclus, section ouverte) gardées dans ce navigateur.
+// Préférences (période, catégories décochées, section ouverte) gardées dans ce navigateur.
+// On retient les catégories DÉcochées : une nouvelle catégorie est donc cochée d'office.
 function loadBreakdownUi() {
+  const defaults = { period: 'month', excluded: [], open: false };
   try {
-    return Object.assign({ period: 'month', includeRecurring: false, open: false },
-      JSON.parse(localStorage.getItem(BREAKDOWN_UI_KEY)));
+    const saved = JSON.parse(localStorage.getItem(BREAKDOWN_UI_KEY)) || {};
+    const ui = Object.assign(defaults, saved);
+    if (!Array.isArray(ui.excluded)) ui.excluded = [];
+    return ui;
   } catch (e) {
-    return { period: 'month', includeRecurring: false, open: false };
+    return defaults;
   }
 }
 
@@ -45,19 +51,19 @@ function breakdownRange(period) {
   return { from: thisMonth + '-01', to: today };
 }
 
-// Total dépensé par catégorie sur la période, dans la devise principale, du plus gros au plus petit.
-// Renvoie null s'il manque un taux de change.
-function computeBreakdown(period, includeRecurring) {
+// Total dépensé par catégorie sur la période (catégories décochées exclues),
+// dans la devise principale, du plus gros au plus petit. null s'il manque un taux de change.
+function computeBreakdown(period, excluded) {
   const range = breakdownRange(period);
   const main = appData.settings.mainCurrency;
   const totals = {};
 
   appData.transactions.forEach(function (tx) {
     if (tx.type !== 'expense') return;
-    if (tx.recurring && !includeRecurring) return;
-    const count = occurrenceDates(tx, range.from, range.to).length;
-    if (!count) return;
     const cat = tx.category || 'Autre';
+    if (excluded.indexOf(cat) !== -1) return;
+    const count = occurrenceDates(tx, range.from, range.to).length; // un loyer mensuel compte une fois par mois
+    if (!count) return;
     if (!totals[cat]) totals[cat] = { EUR: 0, MOP: 0 };
     totals[cat][tx.currency] += tx.amount * count;
   });
@@ -74,29 +80,40 @@ function computeBreakdown(period, includeRecurring) {
   return { rows: rows, total: roundCents(total), currency: main };
 }
 
+// Une case à cocher par catégorie, avec sa couleur.
+function renderCategoryChecks(ui) {
+  document.getElementById('breakdown-cats').innerHTML = appData.settings.categories.map(function (cat) {
+    const checked = ui.excluded.indexOf(cat) === -1;
+    return '<label class="chip">' +
+      '<input type="checkbox" value="' + escapeHtml(cat) + '"' + (checked ? ' checked' : '') + '>' +
+      '<span><i class="chip-dot" style="background:' + categoryColor(cat) + '"></i>' + escapeHtml(cat) + '</span>' +
+    '</label>';
+  }).join('');
+}
+
 function renderBreakdown() {
   const details = document.getElementById('breakdown');
   if (!details.open) return; // section fermée : rien à dessiner
 
   const ui = loadBreakdownUi();
   document.getElementById('breakdown-period').value = ui.period;
-  document.getElementById('breakdown-recurring').checked = ui.includeRecurring;
+  renderCategoryChecks(ui);
 
-  const data = computeBreakdown(ui.period, ui.includeRecurring);
+  const data = computeBreakdown(ui.period, ui.excluded);
   const list = document.getElementById('breakdown-list');
   const summary = document.getElementById('breakdown-summary');
+  const wrap = document.getElementById('breakdown-chart-wrap');
   if (breakdownChart) { breakdownChart.destroy(); breakdownChart = null; }
+  summary.classList.remove('empty-state');
 
-  if (!data) {
-    summary.textContent = 'Il faut un taux de change pour additionner euros et patacas.';
+  if (!data || data.rows.length === 0) {
+    summary.classList.add('empty-state');
+    summary.innerHTML = !data
+      ? 'Il faut un taux de change pour additionner euros et patacas (voir Réglages).'
+      : '<strong>Aucune dépense dans les catégories cochées sur cette période.</strong><br>' +
+        'Coche d\'autres catégories, choisis une autre période, ou ajoute tes dépenses dans l\'onglet Opérations.';
     list.innerHTML = '';
-    document.getElementById('breakdown-chart-wrap').hidden = true;
-    return;
-  }
-  if (data.rows.length === 0) {
-    summary.textContent = 'Aucune dépense sur cette période.';
-    list.innerHTML = '';
-    document.getElementById('breakdown-chart-wrap').hidden = true;
+    wrap.hidden = true;
     return;
   }
 
@@ -116,7 +133,6 @@ function renderBreakdown() {
   }).join('');
 
   // Camembert
-  const wrap = document.getElementById('breakdown-chart-wrap');
   if (typeof Chart === 'undefined') {
     wrap.hidden = true; // pas de graphique sans Internet : la liste suffit
     return;
@@ -129,7 +145,7 @@ function renderBreakdown() {
       datasets: [{
         data: data.rows.map(function (r) { return r.amount; }),
         backgroundColor: data.rows.map(function (r) { return categoryColor(r.category); }),
-        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
+        borderColor: '#ffffff',
         borderWidth: 2
       }]
     },
@@ -170,9 +186,13 @@ function initBreakdown() {
     renderBreakdown();
   });
 
-  document.getElementById('breakdown-recurring').addEventListener('change', function (event) {
+  // Cocher / décocher une catégorie (un seul écouteur pour toutes les cases)
+  document.getElementById('breakdown-cats').addEventListener('change', function (event) {
+    const box = event.target;
+    if (box.type !== 'checkbox') return;
     const ui = loadBreakdownUi();
-    ui.includeRecurring = event.target.checked;
+    ui.excluded = ui.excluded.filter(function (c) { return c !== box.value; });
+    if (!box.checked) ui.excluded.push(box.value);
     saveBreakdownUi(ui);
     renderBreakdown();
   });

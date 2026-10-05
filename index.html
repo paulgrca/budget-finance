@@ -232,10 +232,8 @@
               <option value="3months">Les 3 derniers mois</option>
               <option value="all">Depuis le début</option>
             </select>
-            <label class="checkbox">
-              <input type="checkbox" id="breakdown-recurring">
-              <span>Inclure le loyer et les dépenses récurrentes</span>
-            </label>
+            <!-- Une case par catégorie : décoche celles que tu ne veux pas voir (ex. Loyer) -->
+            <div class="chips" id="breakdown-cats" role="group" aria-label="Catégories affichées"></div>
           </div>
           <p class="breakdown-summary" id="breakdown-summary"></p>
           <div class="breakdown-chart-wrap" id="breakdown-chart-wrap">
